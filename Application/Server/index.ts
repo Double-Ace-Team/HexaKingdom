@@ -1,9 +1,9 @@
 import express from "express";
 import dotenv from "dotenv"
 import http from "http"
+import app from "./app";
 import mongoose from "mongoose"
 import { connectMongoDB } from "./db/conn";
-const app = express()
 
 dotenv.config()
 

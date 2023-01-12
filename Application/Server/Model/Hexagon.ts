@@ -3,7 +3,7 @@ import { IModel } from "./IModel";
 import { Player } from "./Player";
 
 export interface Hexagon extends IModel
-{ //
+{ 
     hexaStatus: hexaStatus;
     game: Game;
     ownerID?: Player;
@@ -11,7 +11,7 @@ export interface Hexagon extends IModel
 
 }
 
-enum hexaStatus
+export enum hexaStatus
 {
     neutral = 0,
     captured = 1,

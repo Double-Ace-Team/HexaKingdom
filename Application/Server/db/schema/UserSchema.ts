@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 const Schema = mongoose.Schema;
 
-const userSchema = new Schema
+export const userSchema = new Schema
 ({
     username:
     {
@@ -13,15 +13,9 @@ const userSchema = new Schema
         type: String,
         required: true
     },
-    
+    player: mongoose.SchemaTypes.ObjectId
 });
 
-const usersDB = mongoose.model('users', userSchema);
-
-export
-{
-    usersDB
-}
 
 
 

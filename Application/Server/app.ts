@@ -11,7 +11,7 @@ const app = express();
 app.use(express.urlencoded({extended: false}));
 app.use(express.json());
 app.use(cors({ origin: process.env.CLIENT_URL }));
-app.use(helmet({ contentSecurityPolicy: false })); //http header analogija; atributi headera analogija
+app.use(helmet({ contentSecurityPolicy: false }));
 
 route(app);
 
