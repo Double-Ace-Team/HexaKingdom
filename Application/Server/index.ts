@@ -6,16 +6,7 @@ import mongoose from "mongoose"
 import { connectMongoDB } from "./db/conn";
 
 dotenv.config()
-
-// mongoose.connect("mongodb://localhost:27017");
-
-// const userSchema = new mongoose.Schema({
-//     name: String,
-//     age: Number
-// })
-
-// mongoose.model("user", userSchema)
-
+import {usersDB} from "./db/db-model"
 async function main()
 {
     connectMongoDB()
@@ -23,11 +14,14 @@ async function main()
     const port = process.env.SERVER_PORT || 5000;
     const server = http.createServer(app)
 
+    
 
     server.listen(port, () => {
         console.log("server started at port: " + port)
     })
 
+    // console.log(usersDB.find({name: "Vexx"}));
+    // //db.myCol.find({"name" : "sunita"});
 }
 
 main()

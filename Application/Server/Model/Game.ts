@@ -13,5 +13,6 @@ export interface Game extends IModel
     playerWonID: string;
     playerCreatedID: string;
     turnForPlayerID: string; //playerID for turn
+    createdAt: Date;
     
 }

@@ -7,7 +7,7 @@ export interface Player extends IModel
 {
     user?: User;
     game?: Game; //gameID: s tring?
-    capturedHexagons: Array<Hexagon>;
+    //capturedHexagons: Array<Hexagon>;
     resources: number;
     playerStatus: PlayerStatus;
 }
