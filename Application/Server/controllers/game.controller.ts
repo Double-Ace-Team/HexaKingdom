@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { armySchema } from "../db/schema/Hexagons/ArmySchema";
 import { Game } from "../Model/Game";
 import { Player } from "../Model/Player";
+import { User } from "../Model/User";
 import ApplicationError from "../utils/error/application.error";
 import { httpErrorTypes } from "../utils/error/types.error";
 import { sendResponse } from "../utils/response";
@@ -12,11 +13,13 @@ export class GameController extends BaseController
     async create(req: Request, res: Response, next: NextFunction){
 
         try {
-            const player = req.body.player as Player;
+            const userID = req.body.userID
+            const player = await this.unit.players.create({resources: 0, playerStatus: 0}, userID) as Player
             const numberOfPlayers = req.body.numberOfPlayers as number;
+            if(!player) throw new ApplicationError(httpErrorTypes.RESOURCE_NOT_FOUND);
 
             const game = {
-                numbOfPlayers: 2,
+                numbOfPlayers: numberOfPlayers,
                 isFinished: false,
                 isStarted: false,
                 createdAt: new Date(),
@@ -54,11 +57,15 @@ export class GameController extends BaseController
 
         try {
             const gameID = req.body.gameID as string;
-
-            const playerID = req.body.playerID as string;
-
-            const payload = await this.unit.games.join(gameID, playerID);
             
+            const userID = req.body.userID
+            const player = await this.unit.players.create({resources: 0, playerStatus: 0}, userID) as Player
+            
+            const playerID = player._id
+            console.log(playerID);
+            if (!playerID) throw new ApplicationError(httpErrorTypes.RESOURCE_NOT_FOUND);
+
+            const payload = await this.unit.games.join(gameID, playerID?.toString());
             if(!payload) throw new ApplicationError(httpErrorTypes.RESOURCE_NOT_FOUND);
 
             return sendResponse(res, payload);

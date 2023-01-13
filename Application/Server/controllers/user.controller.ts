@@ -49,7 +49,7 @@ export class UserController extends BaseController
 
             const result = await this.unit.users.update(user);
             if(!result) throw new ApplicationError(httpErrorTypes.RESOURCE_NOT_FOUND);
-            //if(!result.length) throw new ApplicationError(httpErrorTypes.RESOURCE_NOT_FOUND);
+        
 
             return sendResponse(res, result);
         } 

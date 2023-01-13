@@ -9,10 +9,11 @@ export class PlayerController extends BaseController
     async create(req: Request, res: Response, next: NextFunction){
 
         try {
-            const player = req.body as Player;
+            const player = req.body.player as Player;
 
+            const userID = req.body.userID as string;
 
-            const payload = await this.unit.players.create(player);
+            const payload = await this.unit.players.create(player, userID);
             
             return sendResponse(res, payload);
         } catch (error) {

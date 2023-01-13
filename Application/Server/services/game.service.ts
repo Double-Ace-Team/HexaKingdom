@@ -87,15 +87,18 @@ export class GameService extends BaseService
             if(!game)
                 return null;
 
+
             const player = await playersDB.findById(playerID);
             if(!player)
+            {
                 return null;
-
+            }
             if(!game.numbOfPlayers)
                 return null;
 
             if(game.players.length >= game.numbOfPlayers)
                 return null;
+
 
             game.players.push(player.id);
 
