@@ -50,7 +50,7 @@ export class UserService extends BaseService
 
         try 
         {
-            await usersDB.findByIdAndUpdate(user.id, {username: user.username, password: user.password, player: user.player}); //await obavezno!
+            await usersDB.findByIdAndUpdate(user._id, {username: user.username, password: user.password, player: user.player}); //await obavezno!
             return user                                                                                 //playerID: string?
 
         } 

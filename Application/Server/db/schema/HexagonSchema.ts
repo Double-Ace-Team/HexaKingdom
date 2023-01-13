@@ -14,7 +14,6 @@ export const hexaSchema = new Schema
     hexaStatus: Number,
     hexaType: String,
     ownerID: mongoose.SchemaTypes.ObjectId,
-    game: mongoose.SchemaTypes.ObjectId,
     playerStatus: Number,
     points: Number
 }, option);

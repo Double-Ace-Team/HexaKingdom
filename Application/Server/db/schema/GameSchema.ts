@@ -11,6 +11,7 @@ export const gameSchema = new Schema
     hexagons: [hexaSchema],
     turnNumber: Number,
     isFinished: Boolean,
+    isStarted: Boolean,
     playerCreatedID: mongoose.SchemaTypes.ObjectId,
     playerWonID: mongoose.SchemaTypes.ObjectId,
     turnForPlayerID: mongoose.SchemaTypes.ObjectId,

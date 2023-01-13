@@ -10,6 +10,7 @@ export interface Game extends IModel
     hexagons: Array<Hexagon>;
     turnNumber: number;
     isFinished: boolean;
+    isStarted: boolean;
     playerWonID: string;
     playerCreatedID: string;
     turnForPlayerID: string; //playerID for turn

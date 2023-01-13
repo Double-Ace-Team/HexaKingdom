@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import { Types } from "mongoose";
 import { User } from "../Model/User";
 import { UserService } from "../services/user.service";
 import ApplicationError from "../utils/error/application.error";
@@ -12,8 +13,8 @@ export class UserController extends BaseController
 
         try 
         {
-            const user = req.body as User;
 
+            const user = req.body as User;
             
             const payload = await this.unit.users.create(user);
 
@@ -44,7 +45,7 @@ export class UserController extends BaseController
         {
             const user = req.body as User;
 
-            user.id = req.params.id;
+            user._id = new Types.ObjectId(req.params.id);
 
             const result = await this.unit.users.update(user);
             if(!result) throw new ApplicationError(httpErrorTypes.RESOURCE_NOT_FOUND);

@@ -4,8 +4,8 @@ import { Player } from "./Player";
 
 export interface Hexagon extends IModel
 { 
+    hexaType: String,
     hexaStatus: hexaStatus;
-    game: Game;
     ownerID?: Player;
     points?: number;
 

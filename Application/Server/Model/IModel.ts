@@ -1,4 +1,6 @@
+import { Types } from "mongoose";
+
 export interface IModel
 {
-    id: string;
+    _id: Types.ObjectId;
 }
