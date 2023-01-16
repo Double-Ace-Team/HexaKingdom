@@ -1,15 +1,17 @@
 import { matchesPattern, UnaryExpression } from '@babel/types'
-import React, {useEffect, useState}from 'react'
+import React, {useContext, useEffect, useState}from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { create, getNonStartedGames, join } from './services/game.service'
 import  Game from './Model/Game'
+import { SocketContext } from './App'
 
 
 function GameListPage() {
     
     const [games, setGames] = useState<Game[]>()
     const navigate = useNavigate();
-
+    const socketContext = useContext(SocketContext)
+    
     async function getGames()
     {
         const data = await getNonStartedGames();

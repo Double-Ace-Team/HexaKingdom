@@ -9,31 +9,50 @@ import { create } from 'domain';
 import { createFigure } from './Game/FigureFactoryDto';
 import FigureFactory from './Game/FigureFactory';
 import { OnClickStrategy } from './Game/OnClickStrategy';
-import Game from './Game/Game';
+import Game, { AppContext } from './Game/Game';
 import { BrowserRouter } from 'react-router-dom';
 import { Route, Routes } from 'react-router';
 import GamePage from './GamePage';
 import GameListPage from './GameListPage';
 import Login from './Login';
+import { API_URL } from './config';
+import { io, Socket } from 'socket.io-client';
+import { DefaultEventsMap } from '@socket.io/component-emitter';
+
+export const SocketContext  = createContext<Socket | undefined>(undefined);
 
 function App() {
  
   const [token, setToken] = useState<string | null>(null)
+  const [socket, setSocket] = useState<Socket>()
+
   useEffect(() => {
     setToken(localStorage.getItem('userToken'));
 
-    console.log(token)
+    const newSocket = io(API_URL);
+    setSocket(newSocket)
+
+    return () => {socket?.disconnect();}
+
   }, [])
-  
+  socket?.on("testgame", message => {
+    alert();
+    console.log(message)
+  })
   return (
     <div className="App">
-      <div>Navbar</div>
-    <BrowserRouter>
-      <Routes>
-        <Route path="/game/:id" element={token ? <GamePage/> : <Login/>}/>
-        <Route path="/" element={token ?  <GameListPage /> : <Login />} />
-      </Routes>
-    </BrowserRouter>
+      <SocketContext.Provider value={socket}>
+
+        <div>Navbar</div>
+
+        <BrowserRouter>
+          <Routes>
+            <Route path="/game/:id" element={token ? <GamePage/> : <Login/>}/>
+            <Route path="/" element={token ?  <GameListPage /> : <Login />} />
+          </Routes>
+        </BrowserRouter>
+          
+    </SocketContext.Provider>
     </div>
   );
 }

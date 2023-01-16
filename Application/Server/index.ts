@@ -7,6 +7,7 @@ import { connectMongoDB } from "./db/conn";
 
 dotenv.config()
 import {usersDB} from "./db/db-model"
+import { socketListen } from "./socket";
 async function main()
 {
     connectMongoDB()
@@ -19,6 +20,7 @@ async function main()
     server.listen(port, () => {
         console.log("server started at port: " + port)
     })
+    socketListen(server);
 
     // console.log(usersDB.find({name: "Vexx"}));
     // //db.myCol.find({"name" : "sunita"});

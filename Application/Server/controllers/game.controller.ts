@@ -4,6 +4,7 @@ import { Game } from "../Model/Game";
 import { Hexagon } from "../Model/Hexagon";
 import { Player } from "../Model/Player";
 import { User } from "../Model/User";
+import { getSocket } from "../socket";
 import ApplicationError from "../utils/error/application.error";
 import { httpErrorTypes } from "../utils/error/types.error";
 import { sendResponse } from "../utils/response";
@@ -30,9 +31,11 @@ export class GameController extends BaseController
             } as Game
             
             const payload = await this.unit.games.create(player, game);
-            console.log(payload);
 
             if(!payload) throw new ApplicationError(httpErrorTypes.RESOURCE_NOT_FOUND);
+            
+            const io = getSocket();
+            io.emit("testgame", payload);
             return sendResponse(res, {_id: payload._id, players: payload.players, numbOfPlayers: payload.numbOfPlayers, createdAt: payload.createdAt, userCreatedID: payload.userCreatedID});
         } catch (error) {
             next(error);
