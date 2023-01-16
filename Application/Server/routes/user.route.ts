@@ -7,6 +7,8 @@ const userController = new UserController();
 
 router.post("/", userController.create.bind(userController));
 
+router.post("/login", userController.login.bind(userController));
+
 router.get("/:id", userController.get.bind(userController));
 
 router.delete("/:id", userController.delete.bind(userController));

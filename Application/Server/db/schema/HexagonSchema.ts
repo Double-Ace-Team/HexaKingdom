@@ -12,8 +12,7 @@ const option= {
 export const hexaSchema = new Schema
 ({
     hexaStatus: Number,
-    hexaType: String,
-    ownerID: mongoose.SchemaTypes.ObjectId,
+    ownerID: {type: mongoose.SchemaTypes.ObjectId, ref: "players"},
     playerStatus: Number,
     points: Number
 }, option);

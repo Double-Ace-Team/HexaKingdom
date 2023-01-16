@@ -5,8 +5,8 @@ const Schema = mongoose.Schema;
 export const playerSchema = new Schema//<player> ts
 ({
     resources: Number,
-    user: mongoose.SchemaTypes.ObjectId,
-    game: mongoose.SchemaTypes.ObjectId,
+    user: {type: mongoose.SchemaTypes.ObjectId, ref: "users"},
+    game: {type: mongoose.SchemaTypes.ObjectId, ref: "games"},
     playerStatus: Number
 });
 

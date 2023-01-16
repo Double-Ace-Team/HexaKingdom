@@ -45,6 +45,26 @@ export class UserService extends BaseService
 
     }
 
+    async getByUsername(username: string)
+    {
+
+        try 
+        {
+
+            const user = await usersDB.findOne( {"username": username});
+            return user
+
+        } 
+        catch (error)
+        {
+
+            console.log(error);
+
+        }
+
+        return null
+
+    }
     async update(user: User)
     {
 

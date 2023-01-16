@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { armySchema } from "../db/schema/Hexagons/ArmySchema";
 import { Game } from "../Model/Game";
+import { Hexagon } from "../Model/Hexagon";
 import { Player } from "../Model/Player";
 import { User } from "../Model/User";
 import ApplicationError from "../utils/error/application.error";
@@ -29,10 +30,10 @@ export class GameController extends BaseController
             } as Game
             
             const payload = await this.unit.games.create(player, game);
+            console.log(payload);
 
             if(!payload) throw new ApplicationError(httpErrorTypes.RESOURCE_NOT_FOUND);
-            
-            return sendResponse(res, payload);
+            return sendResponse(res, {_id: payload._id, players: payload.players, numbOfPlayers: payload.numbOfPlayers, createdAt: payload.createdAt, userCreatedID: payload.userCreatedID});
         } catch (error) {
             next(error);
         }
@@ -42,10 +43,18 @@ export class GameController extends BaseController
 
         try {
             const gameID = req.params.id;
-            
+            const userID = req.body.userID;
+
             const payload = await this.unit.games.get(gameID);
             
-            if(!payload) throw new ApplicationError(httpErrorTypes.RESOURCE_NOT_FOUND);
+            let flag = false;
+
+            payload?.players.forEach(player => {
+                if (player.user?._id == userID)
+                    flag = true; 
+            });
+            
+            if(!payload || !flag) throw new ApplicationError(httpErrorTypes.RESOURCE_NOT_FOUND);
 
             return sendResponse(res, payload);
         } catch (error) {
@@ -56,16 +65,31 @@ export class GameController extends BaseController
     async join(req: Request, res: Response, next: NextFunction){
 
         try {
-            const gameID = req.body.gameID as string;
-            
-            const userID = req.body.userID
-            const player = await this.unit.players.create({resources: 0, playerStatus: 0}, userID) as Player
-            
-            const playerID = player._id
-            console.log(playerID);
-            if (!playerID) throw new ApplicationError(httpErrorTypes.RESOURCE_NOT_FOUND);
 
-            const payload = await this.unit.games.join(gameID, playerID?.toString());
+            const gameID = req.body.gameID as string;
+ 
+            const userID = req.body.userID as string;
+            const game = await this.unit.games.get(gameID) ;
+
+            if(!game)
+                throw new ApplicationError(httpErrorTypes.RESOURCE_NOT_FOUND);
+
+
+            if(game?.numbOfPlayers <= game?.players.length)
+            {      
+
+                throw new ApplicationError(httpErrorTypes.RESOURCE_NOT_FOUND);
+            }
+
+            const player = await this.unit.players.create({resources: 0, playerStatus: 0}, userID) as Player
+
+            // // const playerID = player._id
+            if (!player._id) throw new ApplicationError(httpErrorTypes.RESOURCE_NOT_FOUND);
+
+            game.players.push(player);
+
+            //const payload = await this.unit.games.update(game);
+            const payload = await this.unit.games.join(gameID, player?._id.toString());
             if(!payload) throw new ApplicationError(httpErrorTypes.RESOURCE_NOT_FOUND);
 
             return sendResponse(res, payload);
@@ -77,11 +101,19 @@ export class GameController extends BaseController
     async start(req: Request, res: Response, next: NextFunction){
 
         try {
-            const gameID = req.params.id;
+            const gameID = req.body.gameID;
+            const userID = req.body.userID;
+
+            const game = await this.unit.games.get(gameID);
+            if(!game)
+                throw new ApplicationError(httpErrorTypes.RESOURCE_NOT_FOUND);
+            if(game.userCreatedID.toString() != userID)
+                throw new ApplicationError(httpErrorTypes.RESOURCE_NOT_FOUND);
+            if(game.isStarted == true)
+                throw new ApplicationError(httpErrorTypes.RESOURCE_NOT_FOUND);            
+            // game.isStarted = true;
             
-            const game = await this.unit.games.get(gameID) as Game;
-            
-            game.isStarted = true;
+            // const payload = await this.unit.games.update(game);
             
             const payload = await this.unit.games.start(game);
 
@@ -92,6 +124,18 @@ export class GameController extends BaseController
             next(error);
         }
     }
+    
 
+    async getNonStartedGames(req: Request, res: Response, next: NextFunction){
 
+        try {
+            const payload = await this.unit.games.getNonStartedGames();
+            
+            if(!payload) throw new ApplicationError(httpErrorTypes.RESOURCE_NOT_FOUND);
+
+            return sendResponse(res, payload);
+        } catch (error) {
+            next(error);
+        }
+    }
 }

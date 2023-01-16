@@ -29,20 +29,15 @@ export class GameService extends BaseService
             if(!player)
                 return null;
 
-            if(newGame.numbOfPlayers == 2)
+
+            for(let i = 0; i < 25; i++)
             {
-                for(let i = 0; i < 25; i++)
-                {
-                    newGame.hexagons.push(new plainsDB({hexaStatus: 0, hexaType: "Plain", ownerID:"", playerStatus: 0, points: 0}));
-                }
+                newGame.hexagons.push(new plainsDB({hexaStatus: 0, ownerID:"", playerStatus: 0, points: 0}));
             }
-            else
-            {
-                return null
-            } 
+
             
             
-            newGame.playerCreatedID = player.id;
+            newGame.userCreatedID = player.user;
             newGame.turnForPlayerID = player.id
             newGame.players.push(player.id)
             
@@ -65,9 +60,9 @@ export class GameService extends BaseService
 
         try {
 
-            const game = await gamesDB.findById(gameID) as Game;
+            const result = await gamesDB.findById(gameID).populate({path: "players", populate : {path: "user", select: {"username": 1}}}) as Game;//promeniti
 
-            return game;
+            return result;
 
         } catch (error) {
 
@@ -79,6 +74,23 @@ export class GameService extends BaseService
 
     }
 
+    async update(game: Game)
+    {
+        try {
+            console.log(game.players)
+            const result = await gamesDB.findByIdAndUpdate(game) as Game;
+            console.log(result.players)
+            return result;
+
+        } catch (error) {
+
+            console.log(error);
+
+        }
+
+        return null;
+    }
+
     async join(gameID: string, playerID: string)
     {
         try {
@@ -87,7 +99,7 @@ export class GameService extends BaseService
             if(!game)
                 return null;
 
-
+            
             const player = await playersDB.findById(playerID);
             if(!player)
             {
@@ -120,15 +132,16 @@ export class GameService extends BaseService
 
         try {
 
-            const gameUpdate = await gamesDB.findByIdAndUpdate(game._id, game);
+            const result = await gamesDB.findById(game._id);
 
-            if(!gameUpdate)
+            if(!result)
                 return null;
 
-            //game.isStarted = false;
+            result.isStarted = true;
             
-            //await game.save()
-            return gameUpdate;
+            await result.save()
+
+            return result;
 
         } catch (error) {
 
@@ -138,6 +151,24 @@ export class GameService extends BaseService
 
         return null;
 
+    }
+
+    async getNonStartedGames()
+    {
+        try{
+            const games = await gamesDB.find()
+                                        .select("numbOfPlayers userCreatedID")
+                                        .where("isStarted")
+                                        .equals("false")
+                                        .populate("userCreatedID", "username");
+
+            return games
+        }catch (error) {
+
+            console.log(error);
+
+        }
+        return null;
     }
 
 

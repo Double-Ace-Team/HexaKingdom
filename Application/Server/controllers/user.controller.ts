@@ -39,6 +39,24 @@ export class UserController extends BaseController
         }
     }
 
+    async login(req: Request, res: Response, next: NextFunction){
+
+        try {
+            const username = req.body.username;
+            const password = req.body.password;
+            console.log("TEST")
+            const user = await this.unit.users.getByUsername(username);
+            console.log(user);
+            if(!user) throw new ApplicationError(httpErrorTypes.RESOURCE_NOT_FOUND);
+
+            if(user.password != password) throw new ApplicationError(httpErrorTypes.RESOURCE_NOT_FOUND);
+
+            return sendResponse(res, user);
+        } catch (error) {
+            next(error);
+        }
+    }
+
     async update(req: Request, res: Response, next: NextFunction)
     {
         try 

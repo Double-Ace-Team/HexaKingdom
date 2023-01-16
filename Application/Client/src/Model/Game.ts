@@ -3,7 +3,7 @@ import { IModel } from "./IModel";
 import { Player } from "./Player";
 import { User } from "./User";
 
-export interface Game extends IModel
+export default interface Game extends IModel
 {
     players: Array<Player>;
     numbOfPlayers: number;

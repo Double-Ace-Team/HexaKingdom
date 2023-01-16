@@ -1,13 +1,13 @@
-import { Game } from "./Game";
 import { IModel } from "./IModel";
 import { Player } from "./Player";
 
 export interface Hexagon extends IModel
 { 
+    type: string,
     hexaStatus: hexaStatus;
     ownerID?: Player;
     points?: number;
-    type: string;
+
 }
 
 export enum hexaStatus

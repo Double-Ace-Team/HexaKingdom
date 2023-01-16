@@ -7,11 +7,14 @@ const gameController = new GameController();
 
 router.post("/", gameController.create.bind(gameController));
 
-router.get("/:id", gameController.get.bind(gameController));
+
+router.get("/getNonStartedGames", gameController.getNonStartedGames.bind(gameController));
 
 router.put("/join", gameController.join.bind(gameController));
 
-router.put("/start/:id", gameController.start.bind(gameController));
+router.put("/start", gameController.start.bind(gameController));
+
+router.post("/:id", gameController.get.bind(gameController));
 
 
 export default router;

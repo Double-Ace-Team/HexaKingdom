@@ -6,15 +6,15 @@ const Schema = mongoose.Schema;
 
 export const gameSchema = new Schema
 ({  
-    players: [mongoose.SchemaTypes.ObjectId],// {type:mongoose.SchemaTypes.ObjectId, ref:"players"}
+    players: [{type: mongoose.SchemaTypes.ObjectId, ref: "players"}],// {type:mongoose.SchemaTypes.ObjectId, ref:"players"}
     numbOfPlayers: Number,
     hexagons: [hexaSchema],
     turnNumber: Number,
     isFinished: Boolean,
     isStarted: Boolean,
-    playerCreatedID: mongoose.SchemaTypes.ObjectId,
-    playerWonID: mongoose.SchemaTypes.ObjectId,
-    turnForPlayerID: mongoose.SchemaTypes.ObjectId,
+    userCreatedID: {type: mongoose.SchemaTypes.ObjectId, ref: "users"},
+    playerWonID: {type: mongoose.SchemaTypes.ObjectId, ref: "players"},
+    turnForPlayerID: {type: mongoose.SchemaTypes.ObjectId, ref: "players"},
     createdAt: Date
 });
 
