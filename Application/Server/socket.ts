@@ -11,6 +11,10 @@ export function socketListen(server: any)
     io.on('connection', function (socket: any) {
         console.log(`New connection: ${socket.id}`);
 
+        socket.on('join_room', (room: any) => {
+            socket.join(room);
+            console.log(room);
+        })
         socket.on('disconnect', () => console.log(`Connection left (${socket.id})`));
 });
 }
