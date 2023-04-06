@@ -9,4 +9,6 @@ router.post("/", playerController.create.bind(playerController));
 
 router.get("/:id", playerController.get.bind(playerController));
 
+router.put("/makeMove", playerController.makeMove.bind(playerController));
+
 export default router;

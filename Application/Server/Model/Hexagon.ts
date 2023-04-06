@@ -6,7 +6,7 @@ export interface Hexagon extends IModel
 { 
     hexaStatus: hexaStatus;
     ownerID?: Player;
-    points?: number;
+    points?: number; 
     type: string;
 }
 

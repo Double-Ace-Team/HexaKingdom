@@ -33,6 +33,7 @@ export class GameService extends BaseService
             for(let i = 0; i < 25; i++)
             {
                 newGame.hexagons.push(new plainsDB({hexaStatus: 0, ownerID:"", playerStatus: 0, points: 0}));
+        
             }
 
             
