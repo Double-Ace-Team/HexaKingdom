@@ -35,10 +35,7 @@ function App() {
     return () => {socket?.disconnect();}
 
   }, [])
-  socket?.on("testgame", message => {
-    alert();
-    console.log(message)
-  })
+
   return (
     <div className="App">
       <SocketContext.Provider value={socket}>

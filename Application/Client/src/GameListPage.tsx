@@ -21,10 +21,31 @@ function GameListPage() {
 
         setGames(data.data);
     }
-    useEffect(() => {
+    function addGame(game: Game)
+    {
+        if(games != undefined)
+            setGames([...games, game]);
+        else
+            setGames([game])
+    }
 
+    useEffect(() => {
         getGames();
     }, [])
+
+    
+    useEffect(() => {
+
+        socketContext?.on("new_game_created", (game:Game) => {
+            addGame(game);
+        })
+
+        return () => {
+            socketContext?.off("new_game_created");
+        }
+    }, [games])
+
+
     async function onJoinClick(gameID: string | undefined)
     {
         if(!gameID) return;

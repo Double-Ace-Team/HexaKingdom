@@ -32,13 +32,13 @@ class Websocket extends Server {
 
    private static io: Websocket;
 
-   constructor(httpServer) {
+   constructor(httpServer: any) {
        super(httpServer, {
            cors: WEBSOCKET_CORS
        });
    }
 
-   public static getInstance(httpServer?): Websocket {
+   public static getInstance(httpServer?: any): Websocket {
 
        if (!Websocket.io) {
            Websocket.io = new Websocket(httpServer);
