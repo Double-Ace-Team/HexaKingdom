@@ -7,7 +7,8 @@ import { connectMongoDB } from "./db/conn";
 
 dotenv.config()
 import {usersDB} from "./db/db-model"
-import { socketListen } from "./socket";
+import Websocket from "./socket";
+import MainSocket from "./utils/main.socket";
 async function main()
 {
     connectMongoDB()
@@ -20,8 +21,11 @@ async function main()
     server.listen(port, () => {
         console.log("server started at port: " + port)
     })
-    socketListen(server);
-
+    //socketListen(server);
+    const io = Websocket.getInstance(server);
+    io.initializeHandlers([
+        { path: '/main', handler: new MainSocket() }
+    ]);
     // console.log(usersDB.find({name: "Vexx"}));
     // //db.myCol.find({"name" : "sunita"});
 }
