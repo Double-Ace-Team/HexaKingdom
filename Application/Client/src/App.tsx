@@ -29,7 +29,11 @@ function App() {
   useEffect(() => {
     setToken(localStorage.getItem('userToken'));
 
-    const newSocket = io(API_URL);
+    const newSocket = io(API_URL+"/main");
+    newSocket.on('connect', () => {
+      console.log("conencted")
+    });
+
     setSocket(newSocket)
 
     return () => {socket?.disconnect();}

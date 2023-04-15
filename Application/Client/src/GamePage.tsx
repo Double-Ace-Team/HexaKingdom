@@ -7,6 +7,7 @@ import { SocketContext } from './App';
 import { Player } from './Model/Player';
 import { User } from './Model/User';
 import { parseJsonSourceFileConfigFileContent } from 'typescript';
+import { Hexagon } from './Model/Hexagon';
 function GamePage() {
   
     const [isStarted, setIsStarted] = useState<boolean>(false)
@@ -38,20 +39,20 @@ function GamePage() {
     }
     useEffect(() => {
         if(players!=undefined){
-            console.log("TEST")
+            console.log("TEST1")
             socketContext?.on("player_joined", (player: Player) => {
-            alert("playerjoined")
-            console.log(player);
-            if(players == undefined){
-                console.log(players)
-                setPlayers([player])
-                return;
-            } 
-            
+                alert("playerjoined")
+                console.log(player);
+                if(players == undefined){
+                    console.log(players)
+                    setPlayers([player])
+                    return;
+                } 
+                
             setPlayers([...players, player]);
             }) 
-            socketContext?.on("game_started", (msg) => {
-                alert(msg)
+            socketContext?.on("game_started", (hexagons: Hexagon[]) => {
+                console.log(hexagons);
                 window.location.reload();
                 //navigate(`/game/${game?._id}`)
             })
@@ -75,16 +76,14 @@ function GamePage() {
         }
         const result = await start(id);
         if(result.success)
-        {
-            console.log(result.data);
-            
+        {            
             alert("Super");
             navigate("/")
         }
     }
     return (
         <div>
-            {isStarted ? (<Game/>) : (<div>lobby player:{players?.map((player, index) => (<div key={index} >{player.user?.username} </div>) )} <button onClick={onClick}>Start</button></div>)}
+            {isStarted ? (<Game mapProp={undefined}/>) : (<div>lobby player:{players?.map((player, index) => (<div key={index} >{player.user?.username} </div>) )} <button onClick={onClick}>Start</button></div>)}
         </div>
     )
 

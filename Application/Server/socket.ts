@@ -36,6 +36,8 @@ class Websocket extends Server {
        super(httpServer, {
            cors: WEBSOCKET_CORS
        });
+
+       
    }
 
    public static getInstance(httpServer?: any): Websocket {

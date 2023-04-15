@@ -1,4 +1,4 @@
-import React, { createContext, useCallback } from 'react';
+import React, { createContext, useCallback, useContext } from 'react';
 import logo from './logo.svg';
 import pic from './Res/grass.jpg';
 import sword from './Res/sword.png';
@@ -9,6 +9,11 @@ import { Figure} from './Figure.dto';
 import { createFigure } from './FigureFactoryDto';
 import FigureFactory from './FigureFactory';
 import { OnClickStrategy } from './OnClickStrategy';
+import { Hexagon as HexaData} from '../Model/Hexagon';
+import { useNavigate } from 'react-router-dom';
+import { SocketContext } from '../App';
+import { get, start } from '../services/game.service';
+
 function test(i: string) {
   alert("haha: " + String(i));
 }
@@ -25,11 +30,14 @@ interface AppContextInterface
   setFigures: any;
 }
 
-
+interface Props
+{
+    mapProp: HexaData[] | undefined;
+}
 
 export const AppContext = createContext<AppContextInterface | null>(null);
 
-function Game() {
+function Game(props: Props) {
   
   class SelectStrategy extends OnClickStrategy //bolje da su static?
   {
@@ -49,19 +57,21 @@ function Game() {
   const [currentFigure, setCurrentFigure] = useState<Figure>();
   const hexagonSize = { x: 10, y: 10 };
   const moreHexas = GridGenerator.orientedRectangle(5, 5);
+  const navigate = useNavigate();
+  const socketContext = useContext(SocketContext)
   
-
   useEffect(() => {
 
     let figures: Figure[] = [];
-    console.log("useeffect")
-    for(let i = 0; i < 25; i++)
-    {
-      if(i == 10)
-        figures.push(createFigure("army", {"id":i, "name": "testARMY", "img": "pat-2","type": "army", "size": 100}));
-      else
-        figures.push(createFigure("grass", {"id":i,"name": "grass" + i,"img": "pat-1", "type": "grass"}));
-    } 
+
+    
+    // for(let i = 0; i < 25; i++)
+    // {
+    //   if(i == 10)
+    //     figures.push(createFigure("army", {"id":i, "name": "testARMY", "img": "pat-2","type": "army", "size": 100}));
+    //   else
+    //     figures.push(createFigure("plain", {"id":i,"name": "plain" + i,"img": "pat-1", "type": "grass"}));
+    // } 
 
     setFigures(figures);
 
@@ -78,7 +88,7 @@ function Game() {
 
           {/* Additional small grid, hexagons generated with generator */}
           <Layout size={hexagonSize} origin={{ x: 0, y: 0 }}>
-            { moreHexas.map((hex, i) => <Hexagon key={i} q={hex.q} r={hex.r} s={hex.s} fill={figures[i]?.img} onClick={() => onClickStrategy?.onClick(i, figures)} />) }
+            { moreHexas.map((hex, i) => <Hexagon key={i} q={hex.q} r={hex.r} s={hex.s} fill={figures[i]?.img} onClick={() => {console.log(hex); onClickStrategy?.onClick(i, figures)}} />) }
           </Layout>
 
           {/* You can define multiple patterns and switch between them with "fill" prop on Hexagon // insert images here*/}

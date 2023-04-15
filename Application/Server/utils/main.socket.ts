@@ -5,9 +5,14 @@ import { DefaultEventsMap } from "socket.io/dist/typed-events";
 class MainSocket implements SocketInterface
 {
     handleConnection(socket: Socket): void {
-        socket.emit('ping', 'Hi! I am a live socket connection');
+        socket.on('join_room', (room: any) => {
+            socket.join(room);// mora postojati provera moze uz pomoc middleware
+            console.log(room);
+        })
+        socket.on('disconnect', () => console.log(`Connection left (${socket.id})`));
+    
     }
-    middlewareImplementation?(soccket: Socket, next: any) {
+    middlewareImplementation?(socket: Socket, next: any) {
         return next();
     }
     

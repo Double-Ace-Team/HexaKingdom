@@ -26,6 +26,15 @@ async function main()
     io.initializeHandlers([
         { path: '/main', handler: new MainSocket() }
     ]);
+    // io.of("main").on('connection', function (socket: any) {
+    //     console.log(`New connection: ${socket.id}`);
+
+    //     socket.on('join_room', (room: any) => {
+    //         socket.join(room);// mora postojati provera
+    //         console.log(room);
+    //     })
+    //     socket.on('disconnect', () => console.log(`Connection left (${socket.id})`));
+    // });
     // console.log(usersDB.find({name: "Vexx"}));
     // //db.myCol.find({"name" : "sunita"});
 }

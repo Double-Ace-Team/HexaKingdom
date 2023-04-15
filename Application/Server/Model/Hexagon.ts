@@ -8,6 +8,10 @@ export interface Hexagon extends IModel
     ownerID?: Player;
     points?: number; 
     type: string;
+    q: number,
+    r: number,
+    s: number,
+    index: number
 }
 
 export enum hexaStatus

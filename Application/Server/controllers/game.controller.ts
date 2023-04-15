@@ -4,7 +4,7 @@ import { Game } from "../Model/Game";
 import { Hexagon } from "../Model/Hexagon";
 import { Player } from "../Model/Player";
 import { User } from "../Model/User";
-import { getSocket } from "../socket";
+import getSocket from "../socket";
 import ApplicationError from "../utils/error/application.error";
 import { httpErrorTypes } from "../utils/error/types.error";
 import { sendResponse } from "../utils/response";
@@ -34,8 +34,8 @@ export class GameController extends BaseController
 
             if(!payload) throw new ApplicationError(httpErrorTypes.RESOURCE_NOT_FOUND);
             
-            const io = getSocket();
-            io.emit("new_game_created", payload);
+            const io = getSocket.getInstance();
+            io.of("main").emit("new_game_created", payload);
             return sendResponse(res, {_id: payload._id, players: payload.players, numbOfPlayers: payload.numbOfPlayers, createdAt: payload.createdAt, userCreatedID: payload.userCreatedID});
         } catch (error) {
             next(error);
@@ -93,9 +93,9 @@ export class GameController extends BaseController
 
             //const payload = await this.unit.games.update(game);
             const payload = await this.unit.games.join(gameID, player?._id.toString());
-            const io = getSocket();
+            const io = getSocket.getInstance();
             player.user = await this.unit.users.get(userID) as User;
-            io.to(gameID).emit("player_joined", player);
+            io.of("main").to(gameID).emit("player_joined", player);
             console.log(gameID);
             if(!payload) throw new ApplicationError(httpErrorTypes.RESOURCE_NOT_FOUND);
 
@@ -123,8 +123,8 @@ export class GameController extends BaseController
             // const payload = await this.unit.games.update(game);
             
             const payload = await this.unit.games.start(game);
-            const io = getSocket();
-            io.to(gameID).emit("game_started", "game started");
+            const io = getSocket.getInstance();
+            io.of("main").to(gameID).emit("game_started", game.hexagons);
 
             if(!payload) throw new ApplicationError(httpErrorTypes.RESOURCE_NOT_FOUND);
 

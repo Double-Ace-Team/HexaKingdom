@@ -28,14 +28,150 @@ export class GameService extends BaseService
 
             if(!player)
                 return null;
+            let map = [
+                    {
+                        "q": 0,
+                        "r": 0,
+                        "s": 0
+                    },
+                    {
+                        "q": 0,
+                        "r": 1,
+                        "s": -1
+                    },
+                    {
+                        "q": 0,
+                        "r": 2,
+                        "s": -2
+                    },
+                    {
+                        "q": 0,
+                        "r": 3,
+                        "s": -3
+                    },
+                    {
+                        "q": 0,
+                        "r": 4,
+                        "s": -4
+                    },
+                    {
+                        "q": 1,
+                        "r": 0,
+                        "s": -1
+                    },
+                    {
+                        "q": 1,
+                        "r": 1,
+                        "s": -2
+                    },
+                    {
+                        "q": 1,
+                        "r": 2,
+                        "s": -3
+                    },
+                    {
+                        "q": 1,
+                        "r": 3,
+                        "s": -4
+                    },
+                    {
+                        "q": 1,
+                        "r": 4,
+                        "s": -5
+                    },
+                    {
+                        "q": 2,
+                        "r": -1,
+                        "s": -1
+                    },
+                    {
+                        "q": 2,
+                        "r": 0,
+                        "s": -2
+                    },
+                    {
+                        "q": 2,
+                        "r": 1,
+                        "s": -3
+                    },
+                    {
+                        "q": 2,
+                        "r": 2,
+                        "s": -4
+                    },
+                    {
+                        "q": 2,
+                        "r": 3,
+                        "s": -5
+                    },
+                    {
+                        "q": 3,
+                        "r": -1,
+                        "s": -2
+                    },
+                    {
+                        "q": 3,
+                        "r": 0,
+                        "s": -3
+                    },
+                    {
+                        "q": 3,
+                        "r": 1,
+                        "s": -4
+                    },
+                    {
+                        "q": 3,
+                        "r": 2,
+                        "s": -5
+                    },
+                    {
+                        "q": 3,
+                        "r": 3,
+                        "s": -6
+                    },
+                    {
+                        "q": 4,
+                        "r": -2,
+                        "s": -2
+                    },
+                    {
+                        "q": 4,
+                        "r": -1,
+                        "s": -3
+                    },
+                    {
+                        "q": 4,
+                        "r": 0,
+                        "s": -4
+                    },
+                    {
+                        "q": 4,
+                        "r": 1,
+                        "s": -5
+                    },
+                    {
+                        "q": 4,
+                        "r": 2,
+                        "s": -6
+                    }
+                ]
+            let s = 0;
+            let r = 0;
+            let mapSize = 5
+            for(let q = 0; q < mapSize; q++)
+            {   
+                for(let i = 0; i < mapSize; i++){
+                    
+                    newGame.hexagons.push(new plainsDB({hexaStatus: 0, ownerID:"", playerStatus: 0, points: 0, q: q, r: (r + i), s: (s - i), i:( q * mapSize + i)}));
+                    
+                }
+                if(q % 2 == 0)
+                    s--;
+                else
+                    r--;
 
-
-            for(let i = 0; i < 25; i++)
-            {
-                newGame.hexagons.push(new plainsDB({hexaStatus: 0, ownerID:"", playerStatus: 0, points: 0}));
-        
             }
-
+            // ili foreach mapa
             
             
             newGame.userCreatedID = player.user;

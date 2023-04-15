@@ -14,7 +14,11 @@ export const hexaSchema = new Schema
     hexaStatus: Number,
     ownerID: {type: mongoose.SchemaTypes.ObjectId, ref: "players"},
     playerStatus: Number,
-    points: Number
+    points: Number,
+    q: Number,
+    r: Number,
+    s: Number,
+    i: Number
 }, option);
 
 

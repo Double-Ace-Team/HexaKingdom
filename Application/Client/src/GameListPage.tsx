@@ -57,7 +57,9 @@ function GameListPage() {
             alert("greska");
             return;
         }
-        navigate(`/game/${gameID}`)
+        socketContext?.emit('join_game', gameID);
+
+        navigate(`/game/${gameID}`);
 
     }
     async function onNewGameClick()
@@ -68,7 +70,6 @@ function GameListPage() {
             alert("greska");
             return;
         }
-        console.log(result.data)
         navigate(`/game/${result.data._id}`)
     }
     return (
