@@ -7,7 +7,6 @@ class MainSocket implements SocketInterface
     handleConnection(socket: Socket): void {
         socket.on('join_room', (room: any) => {
             socket.join(room);// mora postojati provera moze uz pomoc middleware
-            console.log(room);
         })
         socket.on('disconnect', () => console.log(`Connection left (${socket.id})`));
     

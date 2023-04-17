@@ -3,13 +3,23 @@ import { Hexagon } from "./Hexagon";
 import { IModel } from "./IModel";
 import { User } from "./User";
 
-export interface Player extends IModel
+export class Player extends IModel
 {
     user?: User;
     game?: Game; //gameID: s tring?
     //capturedHexagons: Array<Hexagon>;
     resources: number;
     playerStatus: PlayerStatus;
+
+    constructor(_id: string, resources: number, playerStatus: PlayerStatus, user: User, game: Game)
+    {
+        super(_id);
+        this.resources= resources;
+        this.playerStatus = playerStatus;
+        this.user = user;
+        this.game = game;
+    }
+
 }
 
 export enum PlayerStatus 

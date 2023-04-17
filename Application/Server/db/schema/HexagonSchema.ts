@@ -17,8 +17,7 @@ export const hexaSchema = new Schema
     points: Number,
     q: Number,
     r: Number,
-    s: Number,
-    i: Number
+    s: Number
 }, option);
 
 

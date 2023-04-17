@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react'
-import { Figure } from '../Figure.dto';
+//import { Figure } from '../Figure.dto';
 import { OnClickStrategy } from '../OnClickStrategy';
-import { ArmyDto } from './Army.dto'
+//import { ArmyDto } from './Army.dto'
 import { useContext } from 'react';
 import { AppContext } from '../Game';
+import { Hexagon } from '../../Model/Hexagon';
+import { makeMove } from '../../services/player.service';
 function Army() {
   
   const appContext = useContext(AppContext);
@@ -20,27 +22,42 @@ function Army() {
     {
       super();
     }
-    onClick(index: number, figures: Figure[]): void {
-      const figure = figures[index];
-
-      if(appContext?.currentFigure == undefined)
+    onClick(index: number, hexagons: Hexagon[]): void {
+      const hexagon = hexagons[index];
+      //console.log(hexagon)
+      console.log(appContext?.currentHexagon)
+      if(appContext?.currentHexagon == undefined)
       {
         alert("error swap tile");//throw new Error('Method not implemented.');
         return;
       }
-      const selectedFigure: Figure = appContext?.currentFigure!;
-
-      appContext?.setFigures(figures.map((f) => {
-        if(f.id == figure.id)
-        {
-          return selectedFigure;
-        }
-        else if (f.id == selectedFigure?.id)
-        {
-          return figure;
-        }
-        return f
-      }))
+      //const selectedHexagon: Hexagon = appContext?.currentHexagon!;
+      console.log(appContext?.GameID)
+      console.log(appContext?.PlayerID)
+      if(appContext?.GameID == null)
+      {
+        alert("error")
+        return;
+      }
+      if(appContext?.PlayerID == null)
+      {
+        alert("error")
+        return
+      }
+      makeMove(appContext?.GameID, appContext?.currentHexagon, hexagon, appContext?.PlayerID);
+      // appContext?.setHexagons(hexagons.map((h) => {
+      //   if(h._id == hexagon._id)
+      //   {
+      //     return selectedHexagon;
+      //   }
+      //   else if (h._id == selectedHexagon?._id)
+      //   {
+      //     return hexagon;
+      //   }
+      //   return h;
+      // }))
+      appContext.currentHexagon = undefined;
+      appContext?.setCurrentHexagon(undefined);
       appContext?.setOnClickStrategy(prevClickStrategy);
 
     }

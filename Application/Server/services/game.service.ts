@@ -1,5 +1,5 @@
 import { Types } from "mongoose";
-import { gamesDB, plainsDB, playersDB } from "../db/db-model";
+import { armiesDB, gamesDB, plainsDB, playersDB } from "../db/db-model";
 import { Game } from "../Model/Game";
 import { Player } from "../Model/Player";
 import { BaseService } from "./base.service";
@@ -162,8 +162,13 @@ export class GameService extends BaseService
             {   
                 for(let i = 0; i < mapSize; i++){
                     
-                    newGame.hexagons.push(new plainsDB({hexaStatus: 0, ownerID:"", playerStatus: 0, points: 0, q: q, r: (r + i), s: (s - i), i:( q * mapSize + i)}));
-                    
+                    if(q == 1 && (r + i) == 1 && (s - i) == -2)
+                    {
+                        newGame.hexagons.push(new armiesDB({size: 10, moves: 1, hexaStatus: 0, ownerID:"", playerStatus: 0, points: 0, q: q, r: (r + i), s: (s - i),}));// i:( q * mapSize + i)
+                    }
+                    else{
+                        newGame.hexagons.push(new plainsDB({hexaStatus: 0, ownerID:"", playerStatus: 0, points: 0, q: q, r: (r + i), s: (s - i),}));// i:( q * mapSize + i)
+                    }
                 }
                 if(q % 2 == 0)
                     s--;

@@ -39,12 +39,10 @@ function GamePage() {
     }
     useEffect(() => {
         if(players!=undefined){
-            console.log("TEST1")
             socketContext?.on("player_joined", (player: Player) => {
                 alert("playerjoined")
-                console.log(player);
+
                 if(players == undefined){
-                    console.log(players)
                     setPlayers([player])
                     return;
                 } 
@@ -83,7 +81,7 @@ function GamePage() {
     }
     return (
         <div>
-            {isStarted ? (<Game mapProp={undefined}/>) : (<div>lobby player:{players?.map((player, index) => (<div key={index} >{player.user?.username} </div>) )} <button onClick={onClick}>Start</button></div>)}
+            {isStarted ? (<Game gameID = {game?._id} mapProp={undefined}/>) : (<div>lobby player:{players?.map((player, index) => (<div key={index} >{player.user?.username} </div>) )} <button onClick={onClick}>Start</button></div>)}
         </div>
     )
 

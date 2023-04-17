@@ -1,20 +1,22 @@
 import React, { useEffect } from 'react'
 import Army from './Army/Army';
-import { Figure } from './Figure.dto';
+//import { Figure } from './Figure.dto';
 import { useContext } from 'react';
+import { Hexagon } from '../Model/Hexagon';
+
 interface Props
 {
-    figure: Figure | undefined;
+    hexagon: Hexagon | undefined;
 }
 
 function FigureFactory(props: Props) {
   useEffect(() => {
     console.log("Figurefact:")
-    console.log(props.figure);
+    console.log(props.hexagon);
   }, [])
   return (
     <div>
-        {(props.figure?.type == "army") ? (<Army />) : (<h2>"test2</h2>)}
+        {(props.hexagon?.type == "army") ? (<Army />) : (<h2>"test2</h2>)}
     </div>
   )
 }

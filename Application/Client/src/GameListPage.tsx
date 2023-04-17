@@ -57,7 +57,11 @@ function GameListPage() {
             alert("greska");
             return;
         }
-        socketContext?.emit('join_game', gameID);
+       
+        localStorage.setItem("currentGame", gameID);
+        localStorage.setItem("currentPlayer", result.data.playerID);
+
+        socketContext?.emit('join_game', gameID);//mozda visak, postoji duplikat u gamepage nakon ulaska u game
 
         navigate(`/game/${gameID}`);
 
@@ -70,6 +74,9 @@ function GameListPage() {
             alert("greska");
             return;
         }
+        localStorage.setItem("currentGame", result.data._id);
+        localStorage.setItem("currentPlayer", result.data.playerID);
+
         navigate(`/game/${result.data._id}`)
     }
     return (

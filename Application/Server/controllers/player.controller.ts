@@ -5,6 +5,7 @@ import { Player } from "../Model/Player";
 import { sendResponse } from "../utils/response";
 import { BaseController } from "./base.controller";
 import { Game } from "../Model/Game";
+import getSocket from "../socket";
 
 export class PlayerController extends BaseController
 {
@@ -42,12 +43,20 @@ export class PlayerController extends BaseController
         try 
         {
             //provere da li su tela prazna/nevalidna npr.
-            const game = req.body.game as Game;
-            const hexagon = req.body.hexagon as Hexagon;
-            const player = req.body.player as Player;   
-            const points = req.body.points as number;
+            const gameID = req.body.gameID as string;
+            const playerID = req.body.playerID as string;   
 
-            let payload = this.unit.players.makeMove(player, game, hexagon, points);
+            const hexagonSrc = req.body.hexagonSrc as Hexagon;
+            const hexagonDst =  req.body.hexagonDst as Hexagon;
+            const points = req.body.points as number;
+            
+            let payload = await this.unit.players.makeMove(playerID, gameID, hexagonSrc, hexagonDst, points)
+            if(payload)
+            {
+                const io = getSocket.getInstance();
+                io.of("main").to(gameID).emit("update_game");
+            }
+            
             
             return sendResponse(res, payload);
         } 

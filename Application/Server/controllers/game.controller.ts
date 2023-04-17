@@ -36,7 +36,7 @@ export class GameController extends BaseController
             
             const io = getSocket.getInstance();
             io.of("main").emit("new_game_created", payload);
-            return sendResponse(res, {_id: payload._id, players: payload.players, numbOfPlayers: payload.numbOfPlayers, createdAt: payload.createdAt, userCreatedID: payload.userCreatedID});
+            return sendResponse(res, {_id: payload._id, playerID: player._id});
         } catch (error) {
             next(error);
         }
@@ -70,8 +70,8 @@ export class GameController extends BaseController
         try {
 
             const gameID = req.body.gameID as string;
- 
             const userID = req.body.userID as string;
+
             const game = await this.unit.games.get(gameID) ;
 
             if(!game)
@@ -93,13 +93,16 @@ export class GameController extends BaseController
 
             //const payload = await this.unit.games.update(game);
             const payload = await this.unit.games.join(gameID, player?._id.toString());
+           
             const io = getSocket.getInstance();
+            
             player.user = await this.unit.users.get(userID) as User;
+            
             io.of("main").to(gameID).emit("player_joined", player);
-            console.log(gameID);
+          
             if(!payload) throw new ApplicationError(httpErrorTypes.RESOURCE_NOT_FOUND);
 
-            return sendResponse(res, payload);
+            return sendResponse(res, {gameID: game._id, playerID: player._id});
         } catch (error) {
             next(error);
         }

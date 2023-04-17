@@ -1,12 +1,36 @@
 import { IModel } from "./IModel";
 import { Player } from "./Player";
 
-export interface Hexagon extends IModel
+export class Hexagon extends IModel
 { 
-    type: string,
     hexaStatus: hexaStatus;
     ownerID?: Player;
-    points?: number;
+    points?: number; 
+    type: string;
+    img: string;
+    q: number;
+    r: number;
+    s: number;
+
+    constructor(_id: string, hexaStatus: hexaStatus, 
+        type: string,
+        img: string,
+        q: number,
+        r: number,
+        s: number,
+        points?: number,
+        ownerID?: Player
+    ){
+        super(_id)
+        this.hexaStatus = hexaStatus;
+        this.type = type;
+        this.img = img;
+        this.q = q;
+        this.r = r;
+        this.s = s;
+        this.points = points;
+        this.ownerID=  ownerID;
+    }
 
 }
 

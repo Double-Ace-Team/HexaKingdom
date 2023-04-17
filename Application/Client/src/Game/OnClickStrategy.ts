@@ -1,6 +1,6 @@
-import { Figure } from "./Figure.dto";
+import { Hexagon } from "../Model/Hexagon";
 
 export abstract class OnClickStrategy
 {
-    abstract onClick(index: number, figures: Figure[]): void;
+    abstract onClick(index: number, hexagons: Hexagon[]): void;
 }

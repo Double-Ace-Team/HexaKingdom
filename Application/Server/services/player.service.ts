@@ -57,26 +57,48 @@ export class PlayerService extends BaseService
 
     }
 
-    async makeMove(playerObj: Player, gameID: any,hexagon: Hexagon, points: number)
+    async makeMove(playerID: string, gameID: string, hexagonSrc: Hexagon, hexagonDst: Hexagon, points: number)
     {
        try
-       {
+       {    
+            // if(hexagonSrc.ownerID?._id == playerID)
+            // {
+                //middleware playerid == userid == tokeind
+            // }
            
-            let payload = null;
-            if(hexagon.hexaStatus == hexaStatus.neutral)
-            {
-               payload = await this.hexagonRepository.updateSingleHexagon(playerObj, gameID, hexagon, points);
+            let payload: any;
+            
+            let q = hexagonSrc.q;
+            let s = hexagonSrc.s;
+            let r = hexagonSrc.r;
+            hexagonSrc.q = hexagonDst.q;
+            hexagonSrc.s = hexagonDst.s;
+            hexagonSrc.r = hexagonDst.r;
+            hexagonDst.q = q;
+            hexagonDst.s = s;
+            hexagonDst.r = r;
+            payload = await this.hexagonRepository.updateSingleHexagon(playerID, gameID, hexagonSrc, points);
+            if(!payload) throw new Error("test")
+            payload = await this.hexagonRepository.updateSingleHexagon(playerID, gameID, hexagonDst, points);
+            if(!payload) throw new Error("test")
+
+            //test ^ if success
+           // potreban izmena/ nema razmene koordinata nego se kreira novi hexagon tipa plain na staro mesto
+
+            if(hexagonDst.hexaStatus == hexaStatus.neutral)
+            {   
+
             }
-            else(hexagon.hexaStatus == hexaStatus.captured)
+            else(hexagonDst.hexaStatus == hexaStatus.captured)
             {
-                if(hexagon.ownerID == playerObj._id)
-                {
+                // if(hexagon.ownerID == playerObj._id)
+                // {
 
-                }
-                else(hexagon.ownerID != playerObj._id)
-                {
+                // }
+                // else(hexagon.ownerID != playerObj._id)
+                // {
 
-                }
+                // }
             }
             return payload;
         } 

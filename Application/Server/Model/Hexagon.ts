@@ -11,7 +11,6 @@ export interface Hexagon extends IModel
     q: number,
     r: number,
     s: number,
-    index: number
 }
 
 export enum hexaStatus
