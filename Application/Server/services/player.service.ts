@@ -5,6 +5,7 @@ import { Hexagon, hexaStatus } from "../Model/Hexagon";
 import { Player } from "../Model/Player";
 import { BaseService } from "./base.service";
 import { HexagonRepository } from "../repositories/hexagon.repository";
+import { HexagonService } from "./hexagon.service";
 
 export class PlayerService extends BaseService
 {
@@ -64,6 +65,15 @@ export class PlayerService extends BaseService
             // {
                 //middleware playerid == userid == tokeind
             // }
+
+            let player = playersDB.findById(playerID);
+            let game = gamesDB.findById(gameID) as unknown as Game;
+            if (game.turnForPlayerID !== playerID) {throw new Error("Nisi na potezu");}
+            let hs = new HexagonService();
+            let areNeighboors = hs.isHexaNeighboor(hexagonSrc, hexagonDst);
+            if ( areNeighboors == false) {throw new Error("Nisu susedni heksagoni");}
+            
+            
            
             let payload: any;
             
@@ -109,6 +119,7 @@ export class PlayerService extends BaseService
 
         
     }
+    
     async endTurn(playerID: string, gameID: string)
     {
         try

@@ -45,7 +45,7 @@ export class PlayerController extends BaseController
             //provere da li su tela prazna/nevalidna npr.
             const gameID = req.body.gameID as string;
             const playerID = req.body.playerID as string;   
-
+            
             const hexagonSrc = req.body.hexagonSrc as Hexagon;
             const hexagonDst =  req.body.hexagonDst as Hexagon;
             const points = req.body.points as number;
