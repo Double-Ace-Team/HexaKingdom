@@ -50,10 +50,9 @@ export class PlayerService extends BaseService
         } catch (error) {
 
             console.log(error);
+            return null
 
         }
-
-        return null
 
     }
 
@@ -105,9 +104,23 @@ export class PlayerService extends BaseService
         catch(error) 
         {
             console.log(error);
+            return null;
         }
 
-        return null
+        
     }
-    
+    async endTurn(playerID: string, gameID: string)
+    {
+        try
+        {    
+
+        } 
+        catch(error) 
+        {
+            console.log(error);
+            return null;
+
+        }
+
+    }
 }

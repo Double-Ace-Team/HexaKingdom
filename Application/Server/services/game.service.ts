@@ -1,4 +1,4 @@
-import { Types } from "mongoose";
+import mongoose, { Types } from "mongoose";
 import { armiesDB, gamesDB, plainsDB, playersDB } from "../db/db-model";
 import { Game } from "../Model/Game";
 import { Player } from "../Model/Player";
@@ -219,9 +219,9 @@ export class GameService extends BaseService
     async update(game: Game)
     {
         try {
-            console.log(game.players)
+            //console.log(game.players)
             const result = await gamesDB.findByIdAndUpdate(game) as Game;
-            console.log(result.players)
+            //console.log(result.players)
             return result;
 
         } catch (error) {
@@ -232,7 +232,33 @@ export class GameService extends BaseService
 
         return null;
     }
+    async updateTurnForPlayer(game: Game, newPlayerID: string)
+    {
+        try {
+            console.log(game.turnForPlayerID);
+            const result = await gamesDB.findOneAndUpdate
+            (
+                { 
+                    "_id": game._id
+                },
+                { 
+                    "$set": 
+                    {
+                        "turnForPlayerID": new mongoose.Types.ObjectId(newPlayerID)
+                    }
+                }
+            );
+            return result;
 
+
+        } catch (error) {
+
+            console.log(error);
+
+        }
+
+        return null;
+    }
     async join(gameID: string, playerID: string)
     {
         try {

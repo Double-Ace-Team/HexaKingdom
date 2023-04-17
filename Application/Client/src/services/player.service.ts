@@ -15,3 +15,12 @@ export async function makeMove(gameID: string, hexagonSrc: Hexagon, hexagonDst: 
 
     return result;
 }
+export async function endTurn(gameID: string, playerID: string) {
+
+    const result = await fetchResult(`${BASE_URL}/endTurn`, {
+        method: "PUT",
+        payload: {gameID: gameID, playerID: playerID, userID: localStorage.getItem("userToken")}
+    })
+
+    return result;
+}

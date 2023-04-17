@@ -15,6 +15,8 @@ import { SocketContext } from '../App';
 import { get, start } from '../services/game.service';
 import GameDTO from '../Model/Game'
 import { createHexagon } from './HexagonFactoryDto';
+import { endTurn } from '../services/player.service';
+
 
 function test(i: string) {
   alert("haha: " + String(i));
@@ -93,6 +95,13 @@ function Game(props: Props) {
     //setIsStarted(data.data.isStarted)
 
   }
+
+  async function endTurnOnClick()
+  {
+    const data = await endTurn(game?._id!, localStorage.getItem("currentPlayer")!);
+    if(!data.success) return;
+
+  }
   useEffect(() => {
 
     //let figures: HexaData[] = [];
@@ -145,7 +154,7 @@ function Game(props: Props) {
 
         </HexGrid>
         <p>Currently selected tile: {currentHexagon?._id} </p>
-        
+        {AppContextValue.PlayerID == game?.turnForPlayerID ? (<button onClick={endTurnOnClick}>End turn</button>) : (<p>haha</p>)}
         <FigureFactory hexagon={currentHexagon} />
         <img src={pic} alt="" height={100} width={100} onClick={() => console.log(onClickStrategy)}/>
       </AppContext.Provider>
