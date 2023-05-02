@@ -6,6 +6,7 @@ import { sendResponse } from "../utils/response";
 import { BaseController } from "./base.controller";
 import { Game } from "../Model/Game";
 import getSocket from "../socket";
+import { Army } from "../Model/hexagons/Army";
 
 export class PlayerController extends BaseController
 {
@@ -46,8 +47,10 @@ export class PlayerController extends BaseController
             const gameID = req.body.gameID as string;
             const playerID = req.body.playerID as string;   
             
-            const hexagonSrc = req.body.hexagonSrc as Hexagon;
-            const hexagonDst =  req.body.hexagonDst as Hexagon;
+            //const hexagonSrc = req.body.hexagonSrc as Hexagon;
+            //id1 i id2 
+            const hexagonSrc = req.body.hexagonSrc as Army;
+            const hexagonDst =  req.body.hexagonDst as Hexagon; //ako nije obican heksa, da li ce u njemu biti prosledjeni specificni atributi kroz telo HTTP zahteva?
             const points = req.body.points as number;
             
             let payload = await this.unit.players.makeMove(playerID, gameID, hexagonSrc, hexagonDst, points)
