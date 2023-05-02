@@ -8,6 +8,11 @@ import { Player } from './Model/Player';
 import { User } from './Model/User';
 import { parseJsonSourceFileConfigFileContent } from 'typescript';
 import { Hexagon } from './Model/Hexagon';
+import Button from 'react-bootstrap/Button';
+import Card from 'react-bootstrap/Card';
+import ListGroup  from 'react-bootstrap/ListGroup';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
 function GamePage() {
   
     const [isStarted, setIsStarted] = useState<boolean>(false)
@@ -79,10 +84,33 @@ function GamePage() {
             navigate("/")
         }
     }
+    // iznad card body  <Card.Img variant="top" src="holder.js/100px180" />
+
     return (
-        <div>
-            {isStarted ? (<Game gameID = {game?._id} mapProp={undefined}/>) : (<div>lobby player:{players?.map((player, index) => (<div key={index} >{player.user?.username} </div>) )} <button onClick={onClick}>Start</button></div>)}
-        </div>
+        <Container fluid>
+            <Row className="justify-content-md-center">
+            {isStarted ? (<Game gameID = {game?._id} mapProp={undefined}/>) :
+            (
+
+            <Card style={{ width: '18rem' }}>
+                <Card.Body>
+                    <Card.Header>lobby</Card.Header>
+
+                    <ListGroup variant="flush">
+                        
+                        {players?.map((player, index) => 
+                        (
+                        <ListGroup.Item key={index}>{player.user?.username}</ListGroup.Item>
+                        ))} 
+                    </ListGroup>
+                    <Button variant="primary"onClick={onClick}>Start</Button>
+                </Card.Body>
+            </Card>
+                
+            )
+            }
+            </Row>
+        </Container>
     )
 
 }

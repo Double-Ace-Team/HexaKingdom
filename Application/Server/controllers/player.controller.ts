@@ -84,15 +84,11 @@ export class PlayerController extends BaseController
                 {
                     i = (i + 1) % game.players.length;
                     newPlayerID = game.players[i]._id?.toString()!;
-                    console.log("TEST ! 1")
-                    console.log(game.players[i]._id?.toString())
+
                     break;
                 }
             }
-            console.log("TEST ! 2")
 
-            console.log(newPlayerID)
-            console.log("test 3")
             let payload = await this.unit.games.updateTurnForPlayer(game, newPlayerID);
             if(payload)
             {

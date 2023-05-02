@@ -5,10 +5,11 @@ import { create, getNonStartedGames, join } from './services/game.service'
 import  Game from './Model/Game'
 import { SocketContext } from './App'
 
+import Table from 'react-bootstrap/Table';
 
 function GameListPage() {
     
-    const [games, setGames] = useState<Game[]>()
+    const [games, setGames] = useState<any[]>()
     const navigate = useNavigate();
     const socketContext = useContext(SocketContext)
     
@@ -18,7 +19,7 @@ function GameListPage() {
         
         if(!data.success)
             navigate("/");
-
+        
         setGames(data.data);
     }
     function addGame(game: Game)
@@ -78,13 +79,39 @@ function GameListPage() {
         localStorage.setItem("currentPlayer", result.data.playerID);
 
         navigate(`/game/${result.data._id}`)
-    }
+    }//            {games?.map((game, index) => (<div key={index}>{game._id} <button onClick={() => onJoinClick(game._id)}>Join</button> </div>))} 
+
     return (
         <div>
-            {games?.map((game, index) => (<div key={index}>{game._id} <button onClick={() => onJoinClick(game._id)}>Join</button> </div>))} 
+
+            <Table striped="columns">
+            <thead>
+                <tr>
+                <th>#</th>
+                <th>GameID</th>
+                <th>Host</th>
+                <th>Number of Players</th>
+                <th>Map</th>
+                </tr>
+            </thead>
+            <tbody>
+                {games?.map((game, index) => (
+                <tr key={index}>
+                    <td>{index}.</td>
+                    <td>{game._id} </td>
+                    <td>{game.userCreatedID?.username}</td>
+                    <td>{game.players?.length}</td>
+                    <td>haha</td>
+                    <td> <button onClick={() => onJoinClick(game._id)}>Join</button> </td>
+                
+                </tr>))} 
+            </tbody>
+            </Table>
 
             <button onClick={onNewGameClick}>new game</button>
         </div>
+        
+
     )
 }
 
