@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { Hexagon } from "../../Model/Hexagon";
 
 const Schema = mongoose.Schema;
 
@@ -9,11 +10,10 @@ const option= {
     timestamps: true
 };
 
-export const hexaSchema = new Schema
+export const hexaSchema = new Schema<Hexagon>
 ({
     hexaStatus: Number,
     ownerID: {type: mongoose.SchemaTypes.ObjectId, ref: "players"},
-    playerStatus: Number,
     points: Number,
     q: Number,
     r: Number,

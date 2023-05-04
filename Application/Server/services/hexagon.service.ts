@@ -52,6 +52,8 @@ export class HexagonService extends BaseService
                 await hr.updateSingleHexagon("null", gameID, hexaSrc, 0, hexaSrc.moves);
 
                 let game = await gamesDB.findById(gameID);
+                let hexaList:Hexagon[] = game?.hexagons as Hexagon[]
+
                 game?.hexagons.remove({_id: hexaDst._id});
                 //game?.hexagons = game?.hexagons.filter(h => h._id != hexaDst._id);
 
