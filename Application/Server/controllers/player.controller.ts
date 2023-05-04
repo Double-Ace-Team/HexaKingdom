@@ -55,11 +55,13 @@ export class PlayerController extends BaseController
             //console.log(gameID, hexagonSrcID, hexagonDstID, points);
             // console.log(gameID, hexagonSrcID, hexagonDstID, points);
             let payload = await this.unit.players.makeMove(gameID, hexagonSrcID, hexagonDstID, points)
-            if(payload)
-            {
+            //console.log(payload)
+            //payload je null
+            //if(payload)
+            //{
                 const io = getSocket.getInstance();
                 io.of("main").to(gameID).emit("update_game");
-            }
+            //}
             
             
             return sendResponse(res, payload);
