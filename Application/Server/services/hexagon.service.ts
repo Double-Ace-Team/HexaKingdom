@@ -5,6 +5,7 @@ import { HexagonRepository } from "../repositories/hexagon.repository";
 import { gamesDB, plainsDB } from "../db/db-model";
 import { Game } from "../Model/Game";
 import {Plain } from "../Model/hexagons/Plain";
+import { Army } from "../Model/hexagons/Army";
 export class HexagonService extends BaseService
 {
     // hs: HexagonService;
@@ -36,7 +37,7 @@ export class HexagonService extends BaseService
         return flag
     }
 
-    async swapCoordinates(gameID: string, hexaSrc: Hexagon, hexaDst: Hexagon)
+    async swapCoordinates(gameID: string, hexaSrc: Army, hexaDst: Hexagon)
     {
     
                 let q = hexaSrc.q; 
@@ -47,7 +48,8 @@ export class HexagonService extends BaseService
                 hexaSrc.r = hexaDst.r;
 
                 let hr = new HexagonRepository();
-                hr.updateSingleHexagon("null", gameID, hexaSrc, 0);
+                //Kada je f-ja async, OBAVEZNO AWAIT!
+                await hr.updateSingleHexagon("null", gameID, hexaSrc, 0, hexaSrc.moves);
 
                 let game = await gamesDB.findById(gameID);
                 game?.hexagons.remove({_id: hexaDst._id});
