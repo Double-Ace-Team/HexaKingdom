@@ -12,7 +12,7 @@ export class HexagonRepository
             (
                 { 
                     "_id": gameID, "hexagons._id": hexagon._id 
-                },
+                },  
                 { 
                     "$set": 
                     {
@@ -37,4 +37,7 @@ export class HexagonRepository
         return null
 
     }
+
+
+
 }

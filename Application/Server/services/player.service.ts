@@ -8,6 +8,8 @@ import { HexagonRepository } from "../repositories/hexagon.repository";
 import { HexagonService } from "./hexagon.service";
 import { Army } from "../Model/hexagons/Army";
 import { error } from "console";
+import { armySchema } from "../db/schema/Hexagons/ArmySchema";
+import { Castle } from "../Model/hexagons/Castle";
 
 export class PlayerService extends BaseService
 {
@@ -59,20 +61,27 @@ export class PlayerService extends BaseService
 
     }
 
-    async makeMove(playerID: string, gameID: string, hexagonSrc: Army, hexagonDst: Hexagon, points: number)
+    async makeMove(gameID: string, hexagonSrcID: string, hexagonDstID: string, points: number)
     {
        try
        {    
+        
             // if(hexagonSrc.ownerID?._id == playerID)
             // {
                 //middleware playerid == userid == tokeind
             // }
 
-            let player = playersDB.findById(playerID);
-            let game = gamesDB.findById(gameID) as unknown as Game;
-
-            if (game.turnForPlayerID !== playerID) {throw new Error("Nisi na potezu");}
-
+            //let player = playersDB.findById(playerID);
+            let game = await gamesDB.findById(gameID) as Game;
+            
+            // console.log(hexagonSrcID.toString(), hexagonSrcID, game.hexagons[6]._id, game.hexagons[6]._id?.toHexString());
+            // console.log(game.hexagons[6]._id?.toHexString() == hexagonSrcID);
+            
+            let hexagonSrc = game?.hexagons.find(h=> h._id?.toString() == hexagonSrcID) as Army;
+            let hexagonDst = game.hexagons.find(h=> h._id?.toString() == hexagonDstID) as any;
+            console.log(hexagonSrc);
+            console.log(hexagonDst); console.log("Radi li");
+            //if (game.turnForPlayerID !== playerID) {throw new Error("Nisi na potezu");}
             //if (hexagonSrc.type != "Army") {throw new Error("Samo vojska moze da pravi poteze");}
             if (hexagonSrc.moves == 0) {throw new Error("Vojska nema vise slobodnih koraka");}
             
@@ -80,7 +89,7 @@ export class PlayerService extends BaseService
 
             let hs = new HexagonService();
             let areNeighboors = hs.isHexaNeighboor(hexagonSrc, hexagonDst);
-            if ( areNeighboors == false) {throw new Error("Nisu susedni heksagoni");}
+            if ( await areNeighboors == false) {throw new Error("Nisu susedni heksagoni");}
 
             //ovo je vise za front-end?
             if(hexagonSrc == hexagonDst) {throw new Error("Ne moze se skakati na trenutno polje");}
@@ -93,20 +102,12 @@ export class PlayerService extends BaseService
             //test ^ if success
            // potreban izmena/ nema razmene koordinata nego se kreira novi hexagon tipa plain na staro mesto
             
-            if(hexagonDst.hexaStatus == hexaStatus.neutral) //ili hexatype == plain
+            if(hexagonDst.hexaStatus == 0) //ili hexatype == plain
             {   
-                let q = hexagonSrc.q;
-                let s = hexagonSrc.s;
-                let r = hexagonSrc.r;
-                hexagonSrc.q = hexagonDst.q;
-                hexagonSrc.s = hexagonDst.s;
-                hexagonSrc.r = hexagonDst.r;
-                hexagonDst.q = q;
-                hexagonDst.s = s;
-                hexagonDst.r = r;
+                hs.swapCoordinates(gameID, hexagonSrc, hexagonDst);
              
             }
-            else(hexagonDst.hexaStatus == hexaStatus.captured)
+            else
             {
               if(hexagonDst.ownerID == hexagonSrc.ownerID && (hexagonDst.type == "Mine" || hexagonDst.type == "Castle")) 
               {throw new Error("Ne moze se skakati na svoj rudnik i tvrdjavu");}
@@ -127,10 +128,10 @@ export class PlayerService extends BaseService
               else {throw new Error("Nemoguci slucaj");}
             }
 
-            payload = await this.hexagonRepository.updateSingleHexagon(playerID, gameID, hexagonSrc, points);
-            if(!payload) throw new Error("test")
-            payload = await this.hexagonRepository.updateSingleHexagon(playerID, gameID, hexagonDst, points);
-            if(!payload) throw new Error("test")
+            // payload = await this.hexagonRepository.updateSingleHexagon(playerID, gameID, hexagonSrc, points);
+            // if(!payload) throw new Error("test")
+            // payload = await this.hexagonRepository.updateSingleHexagon(playerID, gameID, hexagonDst, points);
+            // if(!payload) throw new Error("test")
 
             hexagonSrc.moves -= 1;
 

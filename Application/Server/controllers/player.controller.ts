@@ -45,15 +45,15 @@ export class PlayerController extends BaseController
         {
             //provere da li su tela prazna/nevalidna npr.
             const gameID = req.body.gameID as string;
-            const playerID = req.body.playerID as string;   
+            //const playerID = req.body.playerID as string;   
             
             //const hexagonSrc = req.body.hexagonSrc as Hexagon;
             //id1 i id2 
-            const hexagonSrc = req.body.hexagonSrc as Army;
-            const hexagonDst =  req.body.hexagonDst as Hexagon; //ako nije obican heksa, da li ce u njemu biti prosledjeni specificni atributi kroz telo HTTP zahteva?
+            const hexagonSrcID = req.body.hexagonSrcID as string;
+            const hexagonDstID =  req.body.hexagonDstID as string; //ako nije obican heksa, da li ce u njemu biti prosledjeni specificni atributi kroz telo HTTP zahteva?
             const points = req.body.points as number;
-            
-            let payload = await this.unit.players.makeMove(playerID, gameID, hexagonSrc, hexagonDst, points)
+            // console.log(gameID, hexagonSrcID, hexagonDstID, points);
+            let payload = await this.unit.players.makeMove(gameID, hexagonSrcID, hexagonDstID, points)
             if(payload)
             {
                 const io = getSocket.getInstance();
