@@ -73,14 +73,15 @@ export class PlayerService extends BaseService
 
             //let player = playersDB.findById(playerID);
             let game = await gamesDB.findById(gameID) as Game;
-            
-            // console.log(hexagonSrcID.toString(), hexagonSrcID, game.hexagons[6]._id, game.hexagons[6]._id?.toHexString());
-            // console.log(game.hexagons[6]._id?.toHexString() == hexagonSrcID);
+            // console.log(game.numbOfPlayers);
+            //  console.log(hexagonSrcID.toString(), hexagonSrcID, game.hexagons[5]._id, game.hexagons[5]._id?.toHexString());
+            //  console.log(game.hexagons[5]._id?.toString() == hexagonSrcID);
             
             let hexagonSrc = game?.hexagons.find(h=> h._id?.toString() == hexagonSrcID) as Army;
             let hexagonDst = game.hexagons.find(h=> h._id?.toString() == hexagonDstID) as any;
             console.log(hexagonSrc);
-            console.log(hexagonDst); console.log("Radi li");
+            console.log(hexagonDst); 
+            console.log("Radi li");
             //if (game.turnForPlayerID !== playerID) {throw new Error("Nisi na potezu");}
             //if (hexagonSrc.type != "Army") {throw new Error("Samo vojska moze da pravi poteze");}
             if (hexagonSrc.moves == 0) {throw new Error("Vojska nema vise slobodnih koraka");}
@@ -104,7 +105,7 @@ export class PlayerService extends BaseService
             
             if(hexagonDst.hexaStatus == 0) //ili hexatype == plain
             {   
-                hs.swapCoordinates(gameID, hexagonSrc, hexagonDst);
+                await hs.swapCoordinates(gameID, hexagonSrc, hexagonDst);
              
             }
             else
@@ -133,7 +134,7 @@ export class PlayerService extends BaseService
             // payload = await this.hexagonRepository.updateSingleHexagon(playerID, gameID, hexagonDst, points);
             // if(!payload) throw new Error("test")
 
-            hexagonSrc.moves -= 1;
+            //hexagonSrc.moves -= 1; u repository
 
 
             return payload;

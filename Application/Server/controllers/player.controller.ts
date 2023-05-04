@@ -52,6 +52,7 @@ export class PlayerController extends BaseController
             const hexagonSrcID = req.body.hexagonSrcID as string;
             const hexagonDstID =  req.body.hexagonDstID as string; //ako nije obican heksa, da li ce u njemu biti prosledjeni specificni atributi kroz telo HTTP zahteva?
             const points = req.body.points as number;
+            //console.log(gameID, hexagonSrcID, hexagonDstID, points);
             // console.log(gameID, hexagonSrcID, hexagonDstID, points);
             let payload = await this.unit.players.makeMove(gameID, hexagonSrcID, hexagonDstID, points)
             if(payload)

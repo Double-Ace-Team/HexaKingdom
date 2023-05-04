@@ -4,7 +4,7 @@ import { gamesDB } from "../db/db-model";
 
 export class HexagonRepository
 {
-    async updateSingleHexagon(playerID: string, gameID: string,hexagon: Hexagon, points: number)
+    async updateSingleHexagon(playerID: string, gameID: string,hexagon: Hexagon, points: number, moves: number)
     {
 
         try {
@@ -22,6 +22,7 @@ export class HexagonRepository
                         "hexagons.$.q": hexagon.q,
                         "hexagons.$.s": hexagon.s,
                         "hexagons.$.r": hexagon.r,
+                        "hexagons.$.moves": moves
 
                     }
                 }
