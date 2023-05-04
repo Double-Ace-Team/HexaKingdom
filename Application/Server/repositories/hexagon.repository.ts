@@ -8,9 +8,6 @@ export class HexagonRepository
     {
 
         try {
-            console.log(gameID)
-            console.log(hexagon)
-
             const game = await gamesDB.findOneAndUpdate
             (
                 { 
@@ -29,7 +26,6 @@ export class HexagonRepository
                     }
                 }
             );
-            console.log(game)
             return game
 
         } catch (error) {

@@ -155,27 +155,31 @@ export class GameService extends BaseService
             //             "s": -6
             //         }
             //     ]
-            let s = 0;
-            let r = 0;
-            let mapSize = 5
-            for(let q = 0; q < mapSize; q++)
-            {   
-                for(let i = 0; i < mapSize; i++){
-                    
-                    if(q == 1 && (r + i) == 1 && (s - i) == -2)
-                    {
-                        newGame.hexagons.push(new armiesDB({size: 10, moves: 1, hexaStatus: 0, ownerID:"", playerStatus: 0, points: 0, q: q, r: (r + i), s: (s - i),}));// i:( q * mapSize + i)
-                    }
-                    else{
-                        newGame.hexagons.push(new plainsDB({hexaStatus: 0, ownerID:"", playerStatus: 0, points: 0, q: q, r: (r + i), s: (s - i),}));// i:( q * mapSize + i)
-                    }
-                }
-                if(q % 2 == 0)
-                    s--;
-                else
-                    r--;
+            // let map = [ ['p', 'p', 'p', 'p', 'p'],
+            //             ['p', 'a', 'p', 'p', 'p'],
+            //             ['p', 'p', 'a', 'p', 'p'],
+            //             ['p', 'p', 'p', 'p', 'p'],
+            //             ['p', 'p', 'p', 'p', 'p']]
+            // let s = 0;
+            // let r = 0;
+            // let mapSize = 5
+            // for(let q = 0; q < mapSize; q++)
+            // {   
+            //     for(let i = 0; i < mapSize; i++){
+            //         if(map[q][i] == 'a')
+            //         {
+            //             newGame.hexagons.push(new armiesDB({size: 10, moves: 1, hexaStatus: 0, ownerID:"", playerStatus: 0, points: 0, q: q, r: (r + i), s: (s - i),}));// i:( q * mapSize + i)
+            //         }
+            //         else{
+            //             newGame.hexagons.push(new plainsDB({hexaStatus: 0, ownerID:"", playerStatus: 0, points: 0, q: q, r: (r + i), s: (s - i),}));// i:( q * mapSize + i)
+            //         }
+            //     }
+            //     if(q % 2 == 0)
+            //         s--;
+            //     else
+            //         r--;
 
-            }
+            // }
             // ili foreach mapa
             
             
@@ -300,11 +304,52 @@ export class GameService extends BaseService
 
         try {
 
-            const result = await gamesDB.findById(game._id);
-
+            const result = await gamesDB.findById(game._id); //result == game
             if(!result)
                 return null;
 
+            let s = 0;
+            let r = 0;
+            let mapSize = 5
+            
+            let map = [ ['p', 'p', 'p', 'p', 'p'],
+                        ['p', 'p', 'p', 'p', 'p'],
+                        ['p', 'p', 'a1', 'p', 'p'],
+                        ['p', 'p', 'p', 'p', 'p'],
+                        ['p', 'p', 'p', 'p', 'p']]
+            let mapTemp = []
+            //transpose matrix
+            for(let x = 0; x < mapSize; x++)
+            {
+                mapTemp[x] = new Array<string>() 
+                for(let y = 0; y < mapSize; y++)
+                {
+                    mapTemp[x].push(map[y][x])
+                }
+            }
+
+            map = mapTemp
+            for(let q = 0; q < mapSize; q++)
+            {   
+                for(let i = 0; i < mapSize; i++){
+                    if(map[q][i][0] == 'a')
+                    {
+                        let playerIndex:number = +map[q][i][1] - 1
+
+                        result.hexagons.push(new armiesDB({size: 10, moves: 1, hexaStatus: 0, ownerID: result.players[playerIndex], playerStatus: 0, points: 0, q: q, r: (r + i), s: (s - i),}));// i:( q * mapSize + i)
+                        console.log(result.players[playerIndex])
+                    }
+
+                    else{
+                        result.hexagons.push(new plainsDB({hexaStatus: 0, ownerID:"", playerStatus: 0, points: 0, q: q, r: (r + i), s: (s - i),}));// i:( q * mapSize + i)
+                    }
+                }
+                if(q % 2 == 0)
+                    s--;
+                else
+                    r--;
+
+            }
             result.isStarted = true;
             
             await result.save()
