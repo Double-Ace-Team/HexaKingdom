@@ -10,7 +10,7 @@ export async function makeMove(gameID: string, hexagonSrc: Hexagon, hexagonDst: 
 
     const result = await fetchResult(`${BASE_URL}/makeMove`, {
         method: "PUT",
-        payload: {gameID: gameID, hexagonSrc: hexagonSrc, hexagonDst: hexagonDst, playerID: playerID, points: 20, userID: localStorage.getItem("userToken")}
+        payload: {gameID: gameID, hexagonSrcID: hexagonSrc._id, hexagonDstID: hexagonDst._id, playerID: playerID, points: 20, userID: localStorage.getItem("userToken")}
     })
 
     return result;

@@ -59,7 +59,7 @@ function Game(props: Props) {
     }
     onClick(index: number, hexagons: HexaData[]): void {
       setCurrentHexagon(hexagons[index]);
-      console.log("selectstrategy")
+      //console.log("selectstrategy")
     }
     
   }
@@ -81,7 +81,7 @@ function Game(props: Props) {
     const data = await get(props.gameID)
 
     if(!data.success) return
-    console.log(data.data)
+    //console.log(data.data)
     setGame(data.data)
 
 
@@ -97,7 +97,6 @@ function Game(props: Props) {
     //setPlayers(data.data.players)
     //socketContext?.emit("join_room", data.data._id);
     //setIsStarted(data.data.isStarted)
-
   }
 
   async function endTurnOnClick()
@@ -110,7 +109,7 @@ function Game(props: Props) {
 
     //let figures: HexaData[] = [];
 
-    
+
     // for(let i = 0; i < 25; i++)
     // {
     //   if(i == 10)
