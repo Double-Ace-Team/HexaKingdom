@@ -1,11 +1,10 @@
-import { number } from "zod";
+import { number, object } from "zod";
 import { Hexagon } from "../Model/Hexagon";
 import { BaseService } from "./base.service";
-import { HexagonRepository } from "../repositories/hexagon.repository";
-import { gamesDB, plainsDB } from "../db/db-model";
-import { Game } from "../Model/Game";
-import {Plain } from "../Model/hexagons/Plain";
 import { Army } from "../Model/hexagons/Army";
+import { armiesDB, gamesDB, plainsDB, playersDB } from "../db/db-model";
+
+
 export class HexagonService extends BaseService
 {
     // hs: HexagonService;
@@ -43,25 +42,38 @@ export class HexagonService extends BaseService
                 let q = hexaSrc.q; 
                 let s = hexaSrc.s;
                 let r = hexaSrc.r;
-                hexaSrc.q = hexaDst.q;
-                hexaSrc.s = hexaDst.s;
-                hexaSrc.r = hexaDst.r;
-
-                let hr = new HexagonRepository();
-                //Kada je f-ja async, OBAVEZNO AWAIT!
-                await hr.updateSingleHexagon("null", gameID, hexaSrc, 0, hexaSrc.moves);
-
+                
                 let game = await gamesDB.findById(gameID);
-                let hexaList:Hexagon[] = game?.hexagons as Hexagon[]
 
+                if(game == null) throw Error("Igra ne postoji") 
+
+                //Kada je f-ja async, OBAVEZNO AWAIT!
+
+                game?.hexagons.forEach((h : any) => {
+
+                    if(h.toObject().type == 'army' && h.q == hexaSrc.q && h.s == hexaSrc.s && h.r == hexaSrc.r)//if(h._id.equals(hexaSrc._id))
+                    {
+                        if(h.toObject().moves < 1)
+                            throw Error("No more moves left")
+
+                        let copyArmy = new armiesDB({size: h.size, moves: h.toObject().moves - 1,
+                             hexaStatus: h.hexaStatus, ownerID: h.ownerID, playerStatus: h.playerStatus, points: h.points,
+                              q: hexaDst.q, r: hexaDst.r, s: hexaDst.s})
+                        
+                        game?.hexagons.remove(h)
+                        game?.hexagons.push(copyArmy)
+                    }
+                })
+                
+               
                 game?.hexagons.remove({_id: hexaDst._id});
                 //game?.hexagons = game?.hexagons.filter(h => h._id != hexaDst._id);
-
                 let newPlain: any = new plainsDB({hexaStatus: 0, ownerID:"", points: 0, q: q, r: r, s: s});
-                game?.hexagons.push(newPlain);
+                game?.hexagons.push(newPlain)               
 
-                await game?.save();
-
+                
+                // game?.markModified('hexagons');
+                const result = await game?.save();
                 return game;
             
     }
