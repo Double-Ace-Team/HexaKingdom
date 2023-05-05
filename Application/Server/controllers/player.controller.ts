@@ -43,18 +43,23 @@ export class PlayerController extends BaseController
 
         try 
         {
-            //provere da li su tela prazna/nevalidna npr.
+          
             const gameID = req.body.gameID as string;
-            //const playerID = req.body.playerID as string;   
-            
-            //const hexagonSrc = req.body.hexagonSrc as Hexagon;
-            //id1 i id2 
+            if(gameID == null) {throw new Error("Please insert gameID");}
+
+            const playerID =  req.body.playerID as string; 
+            if(playerID == null) {throw new Error("Please insert playerID");}
+          
             const hexagonSrcID = req.body.hexagonSrcID as string;
-            const hexagonDstID =  req.body.hexagonDstID as string; //ako nije obican heksa, da li ce u njemu biti prosledjeni specificni atributi kroz telo HTTP zahteva?
-            const points = req.body.points as number;
-            //console.log(gameID, hexagonSrcID, hexagonDstID, points);
-            // console.log(gameID, hexagonSrcID, hexagonDstID, points);
-            let payload = await this.unit.players.makeMove(gameID, hexagonSrcID, hexagonDstID, points)
+            if(hexagonSrcID == null) {throw new Error("Please insert source hexagonID");}
+
+            const hexagonDstID =  req.body.hexagonDstID as string; 
+            if(hexagonDstID == null) {throw new Error("Please insert destination hexagonID");}
+
+            
+
+            let payload = await this.unit.players.makeMove(gameID, playerID, hexagonSrcID, hexagonDstID);
+
             //console.log(payload)
             //payload je null
             //if(payload)

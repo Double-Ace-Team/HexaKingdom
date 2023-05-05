@@ -9,6 +9,7 @@ import { Army } from "../Model/hexagons/Army";
 import { set } from "mongoose";
 import { armySchema } from "../db/schema/Hexagons/ArmySchema";
 import { hexaSchema } from "../db/schema/HexagonSchema";
+import { type } from "os";
 
 export class HexagonService extends BaseService
 {
@@ -52,31 +53,35 @@ export class HexagonService extends BaseService
                 hexaSrc.r = hexaDst.r;
 
                 let hr = new HexagonRepository();
-                let game = await gamesDB.findById(gameID);
+                let game = await gamesDB.findById(gameID) as Game;
                 //Kada je f-ja async, OBAVEZNO AWAIT!
                // hexaSrc.moves = hexaSrc.moves - 1;
-               console.log(hexaSrc);
+                console.log(hexaSrc);
                 await hr.updateSingleHexagon("null", gameID, hexaSrc, 0);
-                let hexas = game!.hexagons as unknown as Army[];
-                hexas.forEach(h => {
-                    if(h._id == hexaSrc._id)
-                    {
-                        h.q = hexaDst.q;
-                        h.r = hexaDst.r;
-                        h.s = hexaDst.s;
-                        h.moves -= 1;
-                    }
-                })
-                 game!.hexagons = hexas;
-                let indexArmy = game?.hexagons.findIndex(h => h.id === hexaSrc._id) as number;
-                let army = game?.hexagons.filter(h => h.id == hexaSrc._id) as unknown as Army;
-                console.log(army);
-                army.q = hexaDst.q;
-                army.r = hexaDst.r;
-                army.s = hexaDst.s;
-                army.moves -= 1;
 
-                game!.hexagons[indexArmy] = army;
+                // let hexas = game!.hexagons as Hexagon[];
+                // hexas.forEach(h => {
+
+                //     if(typeof h == 'Army')
+                //     {
+                //     if(h._id == hexaSrc._id)
+                //     {
+                //         h.q = hexaDst.q;
+                //         h.r = hexaDst.r;
+                //         h.s = hexaDst.s;
+                //         h.moves -= 1;
+                //     }}
+                // })
+                //  game!.hexagons = hexas as Hexagon[];
+                // let indexArmy = game?.hexagons.findIndex(h => h.id === hexaSrc._id) as number;
+                // let army = game?.hexagons.find(h => h.id == hexaSrc._id) as Army;
+                // console.log(army);
+                // army.q = hexaDst.q;
+                // army.r = hexaDst.r;
+                // army.s = hexaDst.s;
+                // army.moves -= 1;
+
+                // game!.hexagons[indexArmy] = army;
                 
                
                 game?.hexagons.remove({_id: hexaDst._id});
@@ -89,7 +94,22 @@ export class HexagonService extends BaseService
                 return game;
             
     }
+
+    async removeHexagon(gameID: string, hexagon: Hexagon)
+    {
+        let q = hexagon.q;
+        let r = hexagon.r;
+        let s = hexagon.s;
+
+        let game = await gamesDB.findById(gameID);
+        game?.hexagons.remove({_id: hexagon._id});
+        let newPlain: any = new plainsDB({hexaStatus: 0, ownerID:"", points: 0, q: q, r: r, s: s});
+        game?.hexagons.push(newPlain);
+        await game?.save();
+    }
 }
+
+
 
 class Hexa
 {
