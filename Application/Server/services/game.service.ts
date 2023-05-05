@@ -316,7 +316,7 @@ export class GameService extends BaseService
                         ['p', 'p', 'p', 'p', 'p'],
                         ['p', 'p', 'a1', 'p', 'p'],
                         ['p', 'p', 'p', 'p', 'p'],
-                        ['p', 'p', 'p', 'p', 'p']]
+                        ['a2', 'p', 'p', 'p', 'p']]
             let mapTemp = []
             //transpose matrix
             for(let x = 0; x < mapSize; x++)

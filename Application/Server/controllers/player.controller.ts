@@ -77,41 +77,6 @@ export class PlayerController extends BaseController
         }
     }
 
-    async endTurn(req: Request, res: Response, next: NextFunction)
-    {
-
-        try 
-        {
-            let player = await this.unit.players.get(req.body.playerID) as Player;
-            if(player == null) return;
-            let game = await this.unit.games.get(req.body.gameID) as Game;
-            if(game == null) return;
-            if(game.turnForPlayerID != player._id?.toString())
-                return;//send response false || throw error
-            let newPlayerID: string = "";
-            for(let i = 0; i < game.players.length; i++)
-            {
-                if(game.turnForPlayerID == game.players[i]._id?.toString())
-                {
-                    i = (i + 1) % game.players.length;
-                    newPlayerID = game.players[i]._id?.toString()!;
-
-                    break;
-                }
-            }
-
-            let payload = await this.unit.games.updateTurnForPlayer(game, newPlayerID);
-            if(payload)
-            {
-                const io = getSocket.getInstance();
-                io.of("main").to(req.body.gameID).emit("update_game");
-            }
-            return sendResponse(res, payload);
-        } 
-        catch (error) 
-        {
-            next(error);
-        }
-    }
+    
 
 }

@@ -48,14 +48,14 @@ export class HexagonService extends BaseService
                 if(game == null) throw Error("Igra ne postoji") 
 
                 //Kada je f-ja async, OBAVEZNO AWAIT!
-
+               
                 game?.hexagons.forEach((h : any) => {
 
-                    if(h.toObject().type == 'army' && h.q == hexaSrc.q && h.s == hexaSrc.s && h.r == hexaSrc.r)//if(h._id.equals(hexaSrc._id))
+                    if(h.q == hexaSrc.q && h.s == hexaSrc.s && h.r == hexaSrc.r)//if(h._id.equals(hexaSrc._id))
                     {
                         if(h.toObject().moves < 1)
                             throw Error("No more moves left")
-
+                        if(h.toObject().type == 'army' ) {throw new Error("Moves only with army hexagons");}
                         let copyArmy = new armiesDB({size: h.size, moves: h.toObject().moves - 1,
                              hexaStatus: h.hexaStatus, ownerID: h.ownerID, playerStatus: h.playerStatus, points: h.points,
                               q: hexaDst.q, r: hexaDst.r, s: hexaDst.s})
