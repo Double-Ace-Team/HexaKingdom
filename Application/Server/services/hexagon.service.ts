@@ -1,15 +1,9 @@
-import { number } from "zod";
+import { number, object } from "zod";
 import { Hexagon } from "../Model/Hexagon";
 import { BaseService } from "./base.service";
-import { HexagonRepository } from "../repositories/hexagon.repository";
-import { gamesDB, plainsDB } from "../db/db-model";
-import { Game } from "../Model/Game";
-import {Plain } from "../Model/hexagons/Plain";
 import { Army } from "../Model/hexagons/Army";
-import { set } from "mongoose";
-import { armySchema } from "../db/schema/Hexagons/ArmySchema";
-import { hexaSchema } from "../db/schema/HexagonSchema";
-import { type } from "os";
+import { armiesDB, gamesDB, plainsDB, playersDB } from "../db/db-model";
+
 
 export class HexagonService extends BaseService
 {
@@ -48,49 +42,38 @@ export class HexagonService extends BaseService
                 let q = hexaSrc.q; 
                 let s = hexaSrc.s;
                 let r = hexaSrc.r;
-                hexaSrc.q = hexaDst.q;
-                hexaSrc.s = hexaDst.s;
-                hexaSrc.r = hexaDst.r;
+                
+                let game = await gamesDB.findById(gameID);
 
-                let hr = new HexagonRepository();
-                let game = await gamesDB.findById(gameID) as Game;
+                if(game == null) throw Error("Igra ne postoji") 
+
                 //Kada je f-ja async, OBAVEZNO AWAIT!
-               // hexaSrc.moves = hexaSrc.moves - 1;
-                console.log(hexaSrc);
-                await hr.updateSingleHexagon("null", gameID, hexaSrc, 0);
 
-                // let hexas = game!.hexagons as Hexagon[];
-                // hexas.forEach(h => {
+                game?.hexagons.forEach((h : any) => {
 
-                //     if(typeof h == 'Army')
-                //     {
-                //     if(h._id == hexaSrc._id)
-                //     {
-                //         h.q = hexaDst.q;
-                //         h.r = hexaDst.r;
-                //         h.s = hexaDst.s;
-                //         h.moves -= 1;
-                //     }}
-                // })
-                //  game!.hexagons = hexas as Hexagon[];
-                // let indexArmy = game?.hexagons.findIndex(h => h.id === hexaSrc._id) as number;
-                // let army = game?.hexagons.find(h => h.id == hexaSrc._id) as Army;
-                // console.log(army);
-                // army.q = hexaDst.q;
-                // army.r = hexaDst.r;
-                // army.s = hexaDst.s;
-                // army.moves -= 1;
+                    if(h.toObject().type == 'army' && h.q == hexaSrc.q && h.s == hexaSrc.s && h.r == hexaSrc.r)//if(h._id.equals(hexaSrc._id))
+                    {
+                        if(h.toObject().moves < 1)
+                            throw Error("No more moves left")
 
-                // game!.hexagons[indexArmy] = army;
+                        let copyArmy = new armiesDB({size: h.size, moves: h.toObject().moves - 1,
+                             hexaStatus: h.hexaStatus, ownerID: h.ownerID, playerStatus: h.playerStatus, points: h.points,
+                              q: hexaDst.q, r: hexaDst.r, s: hexaDst.s})
+                        
+                        game?.hexagons.remove(h)
+                        game?.hexagons.push(copyArmy)
+                    }
+                })
                 
                
                 game?.hexagons.remove({_id: hexaDst._id});
                 //game?.hexagons = game?.hexagons.filter(h => h._id != hexaDst._id);
                 let newPlain: any = new plainsDB({hexaStatus: 0, ownerID:"", points: 0, q: q, r: r, s: s});
-               
+                game?.hexagons.push(newPlain)               
 
-                await game?.save();
-
+                
+                // game?.markModified('hexagons');
+                const result = await game?.save();
                 return game;
             
     }

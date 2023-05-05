@@ -336,8 +336,7 @@ export class GameService extends BaseService
                     {
                         let playerIndex:number = +map[q][i][1] - 1
 
-                        result.hexagons.push(new armiesDB({size: 10, moves: 1, hexaStatus: 0, ownerID: result.players[playerIndex], playerStatus: 0, points: 0, q: q, r: (r + i), s: (s - i),}));// i:( q * mapSize + i)
-                        console.log(result.players[playerIndex])
+                        result.hexagons.push(new armiesDB({size: 10, moves: 3, hexaStatus: 0, ownerID: result.players[playerIndex], playerStatus: 0, points: 0, q: q, r: (r + i), s: (s - i),}));// i:( q * mapSize + i)
                     }
 
                     else{
