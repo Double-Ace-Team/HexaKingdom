@@ -77,6 +77,27 @@ export class PlayerController extends BaseController
         }
     }
 
+    async endTurn(req: Request, res: Response, next: NextFunction)
+    {
+
+        try 
+        {
+            const gameID = req.body.gameID as string;
+            if(gameID == null) {throw new Error("Please insert gameID");}
+
+            const playerID = req.body.playerID as string;
+            if(playerID == null) {throw new Error("Please insert playerID");}
+
+            let payload = await this.unit.players.endTurn(gameID, playerID);
+
+            return sendResponse(res, payload);
+        } 
+        catch (error) 
+        {
+            next(error);
+        }
+    }
+
     
 
 }

@@ -2,7 +2,7 @@ import { ObjectId } from "mongoose";
 import { playersDB, usersDB, plainsDB, gamesDB } from "../db/db-model";
 import { Game } from "../Model/Game";
 import { Hexagon, hexaStatus } from "../Model/Hexagon";
-import { Player } from "../Model/Player";
+import { Player, PlayerStatus } from "../Model/Player";
 import { BaseService } from "./base.service";
 import { HexagonRepository } from "../repositories/hexagon.repository";
 import { HexagonService } from "./hexagon.service";
@@ -125,12 +125,12 @@ export class PlayerService extends BaseService
               {
                 if (Math.random() < 1/4) 
                 {
-                    await hs.swapCoordinates(gameID, hexagonSrc, hexagonDst); //later: creating new Army
+                    //await hs.swapCoordinates(gameID, hexagonSrc, hexagonDst); //later: creating new Army
                     //playerStatus=destroyed, game.players izbaciti?, game.players.foreach(players/players.status =destroyed) ->
                     //->  ako svi ostali sem jednog imaju ovaj status game.PlayerWonID = ""
                     //obrisati vojsku, rudnik, i ostala polja ako imaju automatski
                     //socket.io sve da obavesti
-                    this.eliminatePlayer();
+                    this.eliminatePlayer(gameID, hexagonDstID);
                 }
                 else          
                 {
@@ -143,12 +143,30 @@ export class PlayerService extends BaseService
             return payload;                     
     }
 
-    async eliminatePlayer()
+    async eliminatePlayer(gameID: string, playerEndID: string)
     {
+        let game = await gamesDB.findById(gameID);
+        let playerEnd = await playersDB.findById(playerEndID);
+
+        playerEnd!.playerStatus = PlayerStatus.Destroyed;
+        playerEnd!.resources = -1;
+        let hs = new HexagonService();
+
+        game!.hexagons.forEach(h =>
+            {
+                if(h.ownerID == playerEnd?.id)
+                {
+                    hs.removeHexagon(game!._id?.toString()!, h.toObject());                    
+                }
+            })
+        game!.numbOfPlayers! -= 1;
+        game!.players = game!.players.filter(p => p._id != playerEnd!._id);
         
+        await game?.save();
+        await playerEnd?.save();
     }
 
-    async endTurn(playerID: string, gameID: string)
+    async endTurn(gameID: string, playerID: string)
     {
 
             let ps = new PlayerService();
