@@ -82,15 +82,15 @@ export class PlayerService extends BaseService
             let player = await playersDB.findById(playerID) as Player;
                         
             let hexagonSrc = game?.hexagons.find(h=> h._id?.toString() == hexagonSrcID) as Army;
-           console.log(hexagonSrc);
+          // console.log(hexagonSrc);
             let hexagonDst = game.hexagons.find(h=> h._id?.toString() == hexagonDstID) as any;
-           console.log(hexagonDst);
-            
+          // console.log(hexagonDst);
+            //ovo zna da zeza(json token)
             hexagonSrc = JSON.parse(JSON.stringify(hexagonSrc));
             hexagonDst = JSON.parse(JSON.stringify(hexagonDst));
 
-            console.log(hexagonSrc, hexagonSrc.type, hexagonSrc.size, hexagonSrc.moves);
-            console.log(hexagonDst ,hexagonDst.type, hexagonDst.size, hexagonDst.moves); 
+            //console.log(hexagonSrc, hexagonSrc.type, hexagonSrc.size, hexagonSrc.moves);
+           // console.log(hexagonDst ,hexagonDst.type, hexagonDst.size, hexagonDst.moves); 
 
             this.checksValidation(game, player, hexagonSrc);
             this.checksValidation(game, player, hexagonDst);
@@ -122,7 +122,7 @@ export class PlayerService extends BaseService
               }
               else if (hexagonDst.type == "army")
               {
-                if ( Math.random() < 1/2) 
+                if (hexagonSrc.size > hexagonDst.size) //Math.random() < 1/2
                 {
                     await hs.swapCoordinates(gameID, hexagonSrc, hexagonDst); //later: creating new Army
                 }
@@ -133,7 +133,7 @@ export class PlayerService extends BaseService
               }
               else if (hexagonDst.type == "castle")
               {
-                if (Math.random() < 1/4) 
+                if (hexagonSrc.size > hexagonDst.size * 2)  //Math.random() < 1/4
                 {
                     this.eliminatePlayer(gameID, hexagonDstID);
                 }
