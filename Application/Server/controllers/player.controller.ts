@@ -77,6 +77,53 @@ export class PlayerController extends BaseController
         }
     }
 
+    async setResources(req: Request, res: Response, next: NextFunction)
+    {
+        try
+        {
+            const gameID = req.body.gameID as string;
+            if(gameID == null) {throw new Error("Please insert gameID");}
+
+            const playerID = req.body.playerID as string;
+            if(playerID == null) {throw new Error("Please insert playerID");}
+
+            const hexagonID = req.body.hexagonID as string;
+            if(hexagonID == null) {throw new Error("Please insert hexagonID");}
+
+            const resources = req.body.resources as number;
+            if(resources == null) {throw new Error("Please insert resources");}
+
+            
+           let payload = await this.unit.players.setResources(gameID, playerID, hexagonID, resources);
+
+            return sendResponse(res, payload);
+        }
+        catch (error)
+        {
+            next(error);
+        }
+    }
+
+    async eliminatePlayer(req: Request, res: Response, next: NextFunction)
+    {
+        try
+        {
+            const gameID = req.body.gameID as string;
+            if(gameID == null) {throw new Error("Please insert gameID");}
+
+            const playerID = req.body.playerID as string;
+            if(playerID == null) {throw new Error("Please insert playerID");}
+            
+            let payload = await this.unit.players.eliminatePlayer(gameID, playerID);
+
+            return sendResponse(res, payload);
+        }
+        catch (error)
+        {
+            next(error);
+        }
+    }
+
     async endTurn(req: Request, res: Response, next: NextFunction)
     {
 

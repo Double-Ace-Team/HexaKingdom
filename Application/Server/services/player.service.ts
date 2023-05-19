@@ -1,4 +1,4 @@
-import { ObjectId } from "mongoose";
+import mongoose, { MongooseDocumentMiddleware, ObjectId, Schema, mongo } from "mongoose";
 import { playersDB, usersDB, plainsDB, gamesDB } from "../db/db-model";
 import { Game } from "../Model/Game";
 import { Hexagon, hexaStatus } from "../Model/Hexagon";
@@ -13,6 +13,9 @@ import { Castle } from "../Model/hexagons/Castle";
 import { GameService } from "./game.service";
 import { sendResponse } from "../utils/response";
 import getSocket from "../socket";
+import { nullable, number } from "zod";
+import { playerSchema } from "../db/schema/PlayerSchema";
+import { type } from "os";
 
 export class PlayerService extends BaseService
 {
@@ -75,44 +78,51 @@ export class PlayerService extends BaseService
 
            
             let game = await gamesDB.findById(gameID) as Game;
-            if(game == null) {throw new Error("Game with given ID doesn't exist");}
-        
-            if (game.turnForPlayerID.toString() != playerID) {throw new Error("Please wait for your turn to play");}
 
+            let player = await playersDB.findById(playerID) as Player;
+                        
             let hexagonSrc = game?.hexagons.find(h=> h._id?.toString() == hexagonSrcID) as Army;
-            if(hexagonSrc == null) {throw new Error("Source hexagon with given ID doesn't exist");}
-
+           console.log(hexagonSrc);
             let hexagonDst = game.hexagons.find(h=> h._id?.toString() == hexagonDstID) as any;
-            if(hexagonDst == null) {throw new Error("Destination hexagon with given ID doesn't exist");}
-          
-            if(hexagonSrc._id == hexagonDst._id) {throw new Error("Army can't jump to itself");}
+           console.log(hexagonDst);
+            
+            hexagonSrc = JSON.parse(JSON.stringify(hexagonSrc));
+            hexagonDst = JSON.parse(JSON.stringify(hexagonDst));
 
+            console.log(hexagonSrc, hexagonSrc.type, hexagonSrc.size, hexagonSrc.moves);
+            console.log(hexagonDst ,hexagonDst.type, hexagonDst.size, hexagonDst.moves); 
+
+            this.checksValidation(game, player, hexagonSrc);
+            this.checksValidation(game, player, hexagonDst);
+            this.checkMoveLogic(game, player, hexagonSrc, hexagonDst);
+
+                      
             let hs = new HexagonService();
-            let areNeighboors = hs.isHexaNeighboor(hexagonSrc, hexagonDst);
-            if ( await areNeighboors == false) {throw new Error("Hexagons are not neighboors");}
 
             let payload: any;
-          
+            
+            //console.log(hexagonDst, hexagonDst.type, hexagonDst.size, hexagonDst.moves);
+            
            
-            if(hexagonDst.toObject().type  == 'plain')
+            if(hexagonDst.type  == 'plain')
             {   
                 await hs.swapCoordinates(gameID, hexagonSrc, hexagonDst);
              
             }
             else
             {
-              if(hexagonDst.ownerID == hexagonSrc.ownerID && (hexagonDst.type == "Mine" || hexagonDst.type == "Castle")) 
+              if(hexagonDst.ownerID == hexagonSrc.ownerID && (hexagonDst.type == "mine" || hexagonDst.type == "castle")) 
               {throw new Error("Can't move on your mine or your castle");}
 
               //3 slucaja: vojska polje, rudnik polje, tvrdjava polje
               //logic for points losing, calculation...
-              if(hexagonDst.type == "Mine")
+              if(hexagonDst.type == "mine")
               {
                 await hs.swapCoordinates(gameID, hexagonSrc, hexagonDst); //later: if mine has defence points, calculate army vs mine point with mb probability
               }
-              else if (hexagonDst.type == "Army")
+              else if (hexagonDst.type == "army")
               {
-                if (Math.random() < 1/2) 
+                if ( Math.random() < 1/2) 
                 {
                     await hs.swapCoordinates(gameID, hexagonSrc, hexagonDst); //later: creating new Army
                 }
@@ -121,15 +131,10 @@ export class PlayerService extends BaseService
                   await hs.removeHexagon(gameID, hexagonSrc);
                 }
               }
-              else if (hexagonDst.type == "Castle")
+              else if (hexagonDst.type == "castle")
               {
                 if (Math.random() < 1/4) 
                 {
-                    //await hs.swapCoordinates(gameID, hexagonSrc, hexagonDst); //later: creating new Army
-                    //playerStatus=destroyed, game.players izbaciti?, game.players.foreach(players/players.status =destroyed) ->
-                    //->  ako svi ostali sem jednog imaju ovaj status game.PlayerWonID = ""
-                    //obrisati vojsku, rudnik, i ostala polja ako imaju automatski
-                    //socket.io sve da obavesti
                     this.eliminatePlayer(gameID, hexagonDstID);
                 }
                 else          
@@ -148,6 +153,8 @@ export class PlayerService extends BaseService
         let game = await gamesDB.findById(gameID);
         let playerEnd = await playersDB.findById(playerEndID);
 
+        this.checksValidation(game!.toObject(), playerEnd!.toObject(), game!.hexagons[0].toObject()); //last par is pseudo because fun. requries it.
+
         playerEnd!.playerStatus = PlayerStatus.Destroyed;
         playerEnd!.resources = -1;
         let hs = new HexagonService();
@@ -160,10 +167,43 @@ export class PlayerService extends BaseService
                 }
             })
         game!.numbOfPlayers! -= 1;
-        game!.players = game!.players.filter(p => p._id != playerEnd!._id);
+        game!.players = game!.players.filter(p => p._id.toString() != playerEnd!._id.toString());
         
         await game?.save();
         await playerEnd?.save();
+
+        const io = getSocket.getInstance();
+        io.of("main").to(gameID).emit("update_game");
+    }
+
+    async setResources(gameID: string, playerID: string, hexagonID: string, resources: number)
+    {
+        let game = await gamesDB.findById(gameID);
+        let player = await playersDB.findById(playerID) as Player;
+        let hexagon = game?.hexagons.find(h => h._id?.toString() == hexagonID) as any; 
+        let ind: number = game!.hexagons.findIndex(h => h._id!.toString() == hexagonID);
+
+        hexagon = JSON.parse(JSON.stringify(hexagon)); //WITHOUT this, Discriminator and derived properties aren't accesible(type D, sizes, moves) of Army
+        //although you can read them within whole object (console.log(hexagon))
+
+        this.checksValidation(game!.toObject(), player, hexagon);
+        if(resources < 0) {throw new Error("Negative value for resources not allowed");}
+
+        if(hexagon.ownerID.toString() != player._id?.toString()) {throw new Error("Source hexagon with given ID doesn't belong to player");}
+        
+
+        if(hexagon.type == 'army' || hexagon.type == 'castle') 
+        { game?.hexagons[ind].$set('size', hexagon.size + resources);}
+        else if(hexagon.type == 'mine') 
+        {game?.hexagons[ind].$set('revenue', hexagon.revenue + resources);}
+        else 
+        {throw new Error("Can't place resources on plain hexagon or unknown error");}
+
+        await game?.save();
+
+        const io = getSocket.getInstance();
+        io.of("main").to(gameID).emit("update_game");
+                                
     }
 
     async endTurn(gameID: string, playerID: string)
@@ -196,5 +236,27 @@ export class PlayerService extends BaseService
                 io.of("main").to(gameID).emit("update_game"); 
             }
             
+    }
+
+    async checkMoveLogic(game: Game, player: Player, hexagonSrc: Army, hexagonDst: Hexagon)
+    {
+        if (game.turnForPlayerID != player._id!.toString()) {throw new Error("Please wait for your turn to play");}
+        if(hexagonSrc._id == hexagonDst._id) {throw new Error("Army can't jump to itself");}
+        if(hexagonSrc.ownerID != player._id) {throw new Error("Source hexagon with given ID doesn't belong to player");}
+
+        let hs = new HexagonService();
+        let areNeighboors = hs.isHexaNeighboor(hexagonSrc, hexagonDst);
+        if ( await areNeighboors == false) {throw new Error("Hexagons are not neighboors");}
+    }
+
+    async checksValidation(game: Game, player: Player, hexagonSrc: Hexagon)
+    {
+        
+        if(game == null) {throw new Error("Game with given ID doesn't exist");}
+
+        if(player == null) {throw new Error("Player with given ID doesn't exist");}
+
+        if(hexagonSrc == null) {throw new Error("Source hexagon with given ID doesn't exist");}
+
     }
 }

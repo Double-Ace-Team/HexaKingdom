@@ -13,4 +13,8 @@ router.put("/makeMove", playerController.makeMove.bind(playerController));
 
 router.put("/endTurn", playerController.endTurn.bind(playerController));
 
+router.put("/setResources", playerController.setResources.bind(playerController));
+
+router.put("/eliminatePlayer", playerController.eliminatePlayer.bind(playerController));
+
 export default router;
