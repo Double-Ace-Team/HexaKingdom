@@ -22,9 +22,7 @@ import ListGroup  from 'react-bootstrap/ListGroup';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-function test(i: string) {
-  alert("haha: " + String(i));
-}
+
 
 
 //NOTE: Figure == hexagon == HexaData
@@ -37,6 +35,7 @@ interface AppContextInterface
   setCurrentHexagon: any;
   currentHexagon: any;
   setHexagons: any;
+  hexagons: any,
   PlayerID: string | null;
   GameID: string | null;
 }
@@ -55,7 +54,10 @@ function Game(props: Props) {
   {
     constructor()
     {
+      //setHexagons(hexagons.map((hex) => {hex.opacity = 1; return hex}))
       super();
+      console.log("test")
+
     }
     onClick(index: number, hexagons: HexaData[]): void {
       setCurrentHexagon(hexagons[index]);
@@ -66,7 +68,7 @@ function Game(props: Props) {
 
   const [hexagons, setHexagons] = useState([] as HexaData[]);
   const [game, setGame] = useState<GameDTO>();
-  const [onClickStrategy, setOnClickStrategy] = useState<OnClickStrategy>(new SelectStrategy());
+  const [onClickStrategy, setOnClickStrategy] = useState<OnClickStrategy | undefined>(undefined);
   const [currentHexagon, setCurrentHexagon] = useState<HexaData>();
   const hexagonSize = { x: 10, y: 10 };
   //const moreHexas = GridGenerator.orientedRectangle(5, 5);
@@ -106,10 +108,9 @@ function Game(props: Props) {
 
   }
   useEffect(() => {
-
     //let figures: HexaData[] = [];
 
-
+    setOnClickStrategy(new SelectStrategy())
     // for(let i = 0; i < 25; i++)
     // {
     //   if(i == 10)
@@ -134,7 +135,8 @@ function Game(props: Props) {
 
   const AppContextValue: AppContextInterface = { 
                                                 onClickStrategy:onClickStrategy, setOnClickStrategy : setOnClickStrategy, 
-                                                setHexagons: setHexagons, currentHexagon: currentHexagon, setCurrentHexagon: setCurrentHexagon, 
+                                                setHexagons: setHexagons, hexagons: hexagons,
+                                                currentHexagon: currentHexagon, setCurrentHexagon: setCurrentHexagon, 
                                                 PlayerID: localStorage.getItem("currentPlayer"),
                                                 GameID: localStorage.getItem("currentGame")
               
@@ -153,7 +155,7 @@ return (
 
             {/* Additional small grid, hexagons generated with generator */}
             <Layout size={hexagonSize} origin={{ x: 0, y: 0 }}>
-              { hexagons.map((hex, i) => <Hexagon key={i} q={hex.q} r={hex.r} s={hex.s} fill={hexagons[i]?.img} onClick={() => {console.log(hex); onClickStrategy?.onClick(i, hexagons)}} />) }
+              { hexagons.map((hex, i) => <Hexagon key={i} q={hex.q} r={hex.r} s={hex.s} style={{ fill: "red", border: "2px solid black", fillOpacity: hex.opacity, }} fill={hexagons[i]?.img} onClick={() => {console.log(hex); onClickStrategy?.onClick(i, hexagons)}} />) }
             </Layout>
 
             {/* You can define multiple patterns and switch between them with "fill" prop on Hexagon // insert images here*/}

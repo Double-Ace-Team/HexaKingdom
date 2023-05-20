@@ -14,7 +14,7 @@ export class HexagonService extends BaseService
     //     super();
     //     this.hs = new HexagonService();
     // }
-    async isHexaNeighboor(hexaSrc: Hexagon, hexaDst: Hexagon) //async?
+    isHexaNeighboor(hexaSrc: Hexagon, hexaDst: Hexagon) //async?
     {
         let hexas: Hexa[] = new Array<Hexa>;
         hexas.push(new Hexa(hexaSrc.q + 1, hexaSrc.r + 0, hexaSrc.s - 1));

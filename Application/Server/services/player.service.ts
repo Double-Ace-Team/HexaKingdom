@@ -238,7 +238,7 @@ export class PlayerService extends BaseService
             
     }
 
-    async checkMoveLogic(game: Game, player: Player, hexagonSrc: Army, hexagonDst: Hexagon)
+     checkMoveLogic(game: Game, player: Player, hexagonSrc: Army, hexagonDst: Hexagon)
     {
         if (game.turnForPlayerID != player._id!.toString()) {throw new Error("Please wait for your turn to play");}
         if(hexagonSrc._id == hexagonDst._id) {throw new Error("Army can't jump to itself");}
@@ -246,7 +246,7 @@ export class PlayerService extends BaseService
 
         let hs = new HexagonService();
         let areNeighboors = hs.isHexaNeighboor(hexagonSrc, hexagonDst);
-        if ( await areNeighboors == false) {throw new Error("Hexagons are not neighboors");}
+        if (areNeighboors == false) {throw new Error("Hexagons are not neighboors");}
     }
 
     async checksValidation(game: Game, player: Player, hexagonSrc: Hexagon)

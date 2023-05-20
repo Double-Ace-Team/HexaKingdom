@@ -9,6 +9,7 @@ export class Army extends Hexagon
     constructor(_id: string, hexaStatus: number, 
         type: string,
         img: string,
+        opacity: number,
         q: number,
         r: number,
         s: number,
@@ -17,7 +18,7 @@ export class Army extends Hexagon
         points?: number,
         ownerID?: Player
     ){
-        super(_id, hexaStatus, type, img, q, r, s, points, ownerID)
+        super(_id, hexaStatus, type, img, opacity, q, r, s, points, ownerID)
         this.size = size;
         this.moves = moves;
     }

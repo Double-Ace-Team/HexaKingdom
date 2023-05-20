@@ -8,6 +8,7 @@ export class Hexagon extends IModel
     points?: number; 
     type: string;
     img: string;
+    opacity: number;
     q: number;
     r: number;
     s: number;
@@ -15,6 +16,7 @@ export class Hexagon extends IModel
     constructor(_id: string, hexaStatus: hexaStatus, 
         type: string,
         img: string,
+        opacity: number,
         q: number,
         r: number,
         s: number,
@@ -25,6 +27,7 @@ export class Hexagon extends IModel
         this.hexaStatus = hexaStatus;
         this.type = type;
         this.img = img;
+        this.opacity = opacity;
         this.q = q;
         this.r = r;
         this.s = s;
