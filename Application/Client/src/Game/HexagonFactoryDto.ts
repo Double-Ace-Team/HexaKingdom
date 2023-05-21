@@ -6,7 +6,7 @@ export const figureTypes: string[] = ["Army", "Castle", "..."];
 //nije factory pattern
 export function createHexagon(type:string, data:any, players:any): Hexagon
 {
-    let figure: Hexagon = new Hexagon(data._id, data.hexaStatus, data.type, "pat-1", 1, data.q, data.r, data.s);
+    let figure: Hexagon = new Hexagon(data._id, data.hexaStatus, data.type, "grass", 1, data.q, data.r, data.s);
     if(type == "army")
     {   
         for(let i:number = 0; i < players.length; i++){
