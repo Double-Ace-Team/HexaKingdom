@@ -22,6 +22,7 @@ import ListGroup  from 'react-bootstrap/ListGroup';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import Patterns from './Res/Patterns';
 
 
 
@@ -88,10 +89,10 @@ function Game(props: Props) {
 
 
     let newHexagons: HexaData[] = new Array<HexaData>();
-
+    console.log(data.data)
     for(let i = 0; i < data.data.hexagons.length; i++)
     {      
-      newHexagons.push(createHexagon(data.data.hexagons[i].type, data.data.hexagons[i]));
+      newHexagons.push(createHexagon(data.data.hexagons[i].type, data.data.hexagons[i], data.data.players));
 
     }
  
@@ -159,8 +160,9 @@ return (
             </Layout>
 
             {/* You can define multiple patterns and switch between them with "fill" prop on Hexagon // insert images here*/}
-            <Pattern id="pat-1" link={pic} size={hexagonSize} />
-            <Pattern id="pat-2" link={sword} size={hexagonSize} />
+            {/* <Pattern id="pat-1" link={pic} size={hexagonSize} />
+            <Pattern id="pat-2" link={sword} size={hexagonSize} /> */}
+            <Patterns hexagonSize={hexagonSize}/>
             {/* insert functions here */}
 
           </HexGrid>

@@ -83,8 +83,7 @@ function Army() {
 
 
       //const selectedHexagon: Hexagon = appContext?.currentHexagon!;
-      console.log(appContext?.GameID)
-      console.log(appContext?.PlayerID)
+ 
 
       if(appContext?.GameID == null)
       {
@@ -125,11 +124,14 @@ function Army() {
     appContext?.setOnClickStrategy(new SwapStrategy());
   }
 
-
+  useEffect(() => {
+    console.log(appContext?.PlayerID)
+    console.log(appContext?.currentHexagon)
+  }, [])
 
 
   return (
-    <div>Army <button onClick={onClick}>dugme</button></div>
+    <div>Army {appContext?.PlayerID == appContext?.currentHexagon?.ownerID ? (<button onClick={onClick}>dugme</button>) : null}</div>
   )
 }
 
