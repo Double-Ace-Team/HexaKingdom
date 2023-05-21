@@ -7,6 +7,7 @@ import { BaseController } from "./base.controller";
 import { Game } from "../Model/Game";
 import getSocket from "../socket";
 import { Army } from "../Model/hexagons/Army";
+import { nullable, undefined } from "zod";
 
 export class PlayerController extends BaseController
 {
@@ -14,8 +15,10 @@ export class PlayerController extends BaseController
 
         try {
             const player = req.body.player as Player;
+            if(player == null) {throw new Error("Please insert body of player");}
 
             const userID = req.body.userID as string;
+            if(userID == null) {throw new Error("Please insert userID");}
 
             const payload = await this.unit.players.create(player, userID);
             
@@ -29,6 +32,7 @@ export class PlayerController extends BaseController
 
         try {
             const playerID = req.params.id;
+            if(playerID == null) {throw new Error("Please insert playerID");}
             
             const payload = await this.unit.players.get(playerID);
 
@@ -45,17 +49,14 @@ export class PlayerController extends BaseController
         {
           
             const gameID = req.body.gameID as string;
-            if(gameID == null) {throw new Error("Please insert gameID");}
 
-            const playerID =  req.body.playerID as string; 
-            if(playerID == null) {throw new Error("Please insert playerID");}
-          
-            const hexagonSrcID = req.body.hexagonSrcID as string;
-            if(hexagonSrcID == null) {throw new Error("Please insert source hexagonID");}
+            const playerID =  req.body.playerID as string;       
 
+            const hexagonSrcID = req.body.hexagonSrcID as string;     
+                 
             const hexagonDstID =  req.body.hexagonDstID as string; 
-            if(hexagonDstID == null) {throw new Error("Please insert destination hexagonID");}
-
+            
+            this.checkValidatons(gameID, playerID, hexagonSrcID, hexagonDstID, 1);
             
 
             let payload = await this.unit.players.makeMove(gameID, playerID, hexagonSrcID, hexagonDstID);
@@ -82,16 +83,15 @@ export class PlayerController extends BaseController
         try
         {
             const gameID = req.body.gameID as string;
-            if(gameID == null) {throw new Error("Please insert gameID");}
 
-            const playerID = req.body.playerID as string;
-            if(playerID == null) {throw new Error("Please insert playerID");}
+            const playerID = req.body.playerID as string;            
 
-            const hexagonID = req.body.hexagonID as string;
-            if(hexagonID == null) {throw new Error("Please insert hexagonID");}
+            const hexagonID = req.body.hexagonID as string;            
 
             const resources = req.body.resources as number;
-            if(resources == null) {throw new Error("Please insert resources");}
+
+            this.checkValidatons(gameID, playerID, hexagonID, 'redundant parameter', resources);
+            
 
             
            let payload = await this.unit.players.setResources(gameID, playerID, hexagonID, resources);
@@ -108,11 +108,11 @@ export class PlayerController extends BaseController
     {
         try
         {
-            const gameID = req.body.gameID as string;
-            if(gameID == null) {throw new Error("Please insert gameID");}
+            const gameID = req.body.gameID as string;            
 
             const playerID = req.body.playerID as string;
-            if(playerID == null) {throw new Error("Please insert playerID");}
+            
+            this.checkValidatons(gameID, playerID, 'redundant parameter', 'redundant parameter', 1);
             
             let payload = await this.unit.players.eliminatePlayer(gameID, playerID);
 
@@ -130,10 +130,11 @@ export class PlayerController extends BaseController
         try 
         {
             const gameID = req.body.gameID as string;
-            if(gameID == null) {throw new Error("Please insert gameID");}
+    
 
             const playerID = req.body.playerID as string;
-            if(playerID == null) {throw new Error("Please insert playerID");}
+            
+            this.checkValidatons(gameID, playerID, 'redundant parameter', 'redundant parameter', 1);
 
             let payload = await this.unit.players.endTurn(gameID, playerID);
 
@@ -144,7 +145,19 @@ export class PlayerController extends BaseController
             next(error);
         }
     }
+    //eliminating duplication of code(hard coding) with little compromise of  added compiler usage
+    //(function, params, redundant validations)
+    
+    checkValidatons(gameID: string, playerID: string , hexagonSrcID: string , hexagonDstID: string, resources: number)
+    {
+        
+            if(gameID == null) {throw new Error("Please insert gameID");}
+            if(playerID == null) {throw new Error("Please insert playerID");}
+            if(hexagonSrcID == null) {throw new Error("Please insert source hexagonID");}
+            if(hexagonDstID == null) {throw new Error("Please insert destination hexagonID");}
+            if(resources == null) {throw new Error("Please insert resources");} 
+           
+    }
 
     
-
 }
