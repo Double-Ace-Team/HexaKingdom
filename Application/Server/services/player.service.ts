@@ -13,7 +13,7 @@ import { Castle } from "../Model/hexagons/Castle";
 import { GameService } from "./game.service";
 import { sendResponse } from "../utils/response";
 import getSocket from "../socket";
-import { nullable, number } from "zod";
+import { any, nullable, number } from "zod";
 import { playerSchema } from "../db/schema/PlayerSchema";
 import { type } from "os";
 import ApplicationError from "../utils/error/application.error";
@@ -30,9 +30,7 @@ export class PlayerService extends BaseService
     async create(player: Player, userID: string)
     {   
        
-        const newPlayer = new playersDB(player);
 
-        try {
             const newPlayer = new playersDB(player);
 
             const user = await usersDB.findById(userID);
@@ -43,9 +41,7 @@ export class PlayerService extends BaseService
             
             return result;
 
-        } catch (error) {
-            console.log(error);
-        }
+       
 
         return null
     }
@@ -53,18 +49,12 @@ export class PlayerService extends BaseService
     async get(playerID: string)
     {
 
-        try {
-
+       
             const player = await playersDB.findById(playerID);
 
             return player
 
-        } catch (error) {
-
-            console.log(error);
-            return null
-
-        }
+       
 
     }
     
@@ -86,7 +76,10 @@ export class PlayerService extends BaseService
           // console.log(hexagonSrc);
             let hexagonDst = game.hexagons.find(h=> h._id?.toString() == hexagonDstID) as any;
           // console.log(hexagonDst);
-            //ovo zna da zeza(json token)
+
+            //WITHOUT this, Discriminator and derived properties aren't accesible(type D, sizes, moves) of Army
+            //although you can read them within whole object (console.log(hexagon))
+            //can make bugs(json token)
             hexagonSrc = JSON.parse(JSON.stringify(hexagonSrc));
             hexagonDst = JSON.parse(JSON.stringify(hexagonDst));
 
@@ -112,8 +105,8 @@ export class PlayerService extends BaseService
             }
             else
             {
-              if(hexagonDst.ownerID == hexagonSrc.ownerID && (hexagonDst.type == "mine" || hexagonDst.type == "castle")) 
-              {throw new Error("Can't move on your mine or your castle");}
+              if(hexagonDst.ownerID == hexagonSrc.ownerID && (hexagonDst.type == "mine" || hexagonDst.type == "castle" || hexagonDst.type == 'army')) 
+              {throw new Error("Can't move on your army, mine or castle");}
 
               //3 slucaja: vojska polje, rudnik polje, tvrdjava polje
               //logic for points losing, calculation...
@@ -180,17 +173,16 @@ export class PlayerService extends BaseService
     async setResources(gameID: string, playerID: string, hexagonID: string, resources: number)
     {
         let game = await gamesDB.findById(gameID);
-        let player = await playersDB.findById(playerID) as Player;
+        let player = await playersDB.findById(playerID);
         let hexagon = game?.hexagons.find(h => h._id?.toString() == hexagonID) as any; 
         let ind: number = game!.hexagons.findIndex(h => h._id!.toString() == hexagonID);
 
-        hexagon = JSON.parse(JSON.stringify(hexagon)); //WITHOUT this, Discriminator and derived properties aren't accesible(type D, sizes, moves) of Army
-        //although you can read them within whole object (console.log(hexagon))
+        hexagon = JSON.parse(JSON.stringify(hexagon)); 
 
-        this.checksValidation(game!.toObject(), player, hexagon);
+        this.checksValidation(game!.toObject(), player!.toObject(), hexagon);
         if(resources < 0) {throw new Error("Negative value for resources not allowed");}
 
-        if(hexagon.ownerID.toString() != player._id?.toString()) {throw new Error("Source hexagon with given ID doesn't belong to player");}
+        if(hexagon.ownerID.toString() != player!._id?.toString()) {throw new Error("Source hexagon with given ID doesn't belong to player");}
         
 
         if(hexagon.type == 'army' || hexagon.type == 'castle') 
@@ -200,11 +192,37 @@ export class PlayerService extends BaseService
         else 
         {throw new Error("Can't place resources on plain hexagon or unknown error");}
 
+        player!.resources! -= resources;
         await game?.save();
+        await player?.save();
 
         const io = getSocket.getInstance();
         io.of("main").to(gameID).emit("update_game");
                                 
+    }
+
+    //async
+    async createNewArmy(gameID: string, playerID: string, resources: number)
+    {
+        let gameDoc = await gamesDB.findById(gameID);
+        let playerDoc = await playersDB.findById(playerID);
+
+        this.checksValidation(gameDoc!.toObject(), playerDoc!.toObject(), 'redundant parameter');
+        //Nuthin
+
+        if(resources < 1000) {throw new Error("Not enough resources to create army");}
+        let castle = gameDoc?.hexagons.find(h => h.ownerID == playerDoc?.id && h.toObject().type == 'army')
+        gameDoc?.hexagons.forEach(h =>
+        {
+            if(h.toObject().type == 'a')
+            {
+              let a = 4;
+            }
+
+        })
+        const io = getSocket.getInstance();
+        io.of("main").to(gameID).emit("update_game");
+
     }
 
     async endTurn(gameID: string, playerID: string)
@@ -250,7 +268,7 @@ export class PlayerService extends BaseService
         if (areNeighboors == false) {throw new Error("Hexagons are not neighboors");}
     }
 
-    async checksValidation(game: Game, player: Player, hexagonSrc: Hexagon)
+    async checksValidation(game: Game, player: Player, hexagonSrc: Hexagon | string)
     {
         
         if(game == null) {throw new Error("Game with given ID doesn't exist");}
