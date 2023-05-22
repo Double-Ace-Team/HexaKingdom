@@ -96,7 +96,7 @@ function Game(props: Props) {
     //console.log(data.data)
     setGame(data.data)
 
-
+    
     let newHexagons: HexaData[] = new Array<HexaData>();
     console.log(data.data)
     for(let i = 0; i < data.data.hexagons.length; i++)

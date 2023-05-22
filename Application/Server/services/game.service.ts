@@ -1,5 +1,5 @@
 import mongoose, { Types } from "mongoose";
-import { armiesDB, gamesDB, plainsDB, playersDB } from "../db/db-model";
+import { armiesDB, castlesDB, gamesDB, minesDB, plainsDB, playersDB } from "../db/db-model";
 import { Game } from "../Model/Game";
 import { Player } from "../Model/Player";
 import { BaseService } from "./base.service";
@@ -312,11 +312,11 @@ export class GameService extends BaseService
             let r = 0;
             let mapSize = 5
             
-            let map = [ ['p', 'p', 'p', 'p', 'p'],
+            let map = [ ['m2', 'p', 'c2', 'p', 'm2'],
+                        ['p', 'p', 'a2', 'p', 'p'],
                         ['p', 'p', 'p', 'p', 'p'],
                         ['p', 'p', 'a1', 'p', 'p'],
-                        ['p', 'p', 'p', 'p', 'p'],
-                        ['a2', 'p', 'p', 'p', 'p']]
+                        ['m1', 'p', 'c1', 'p', 'm1']]
             let mapTemp = []
             //transpose matrix
             for(let x = 0; x < mapSize; x++)
@@ -338,7 +338,16 @@ export class GameService extends BaseService
 
                         result.hexagons.push(new armiesDB({size: 10, moves: 3, hexaStatus: 0, ownerID: result.players[playerIndex], playerStatus: 0, points: 0, q: q, r: (r + i), s: (s - i),}));// i:( q * mapSize + i)
                     }
-
+                    else if(map[q][i][0] == 'm')
+                    {
+                        let playerIndex:number = +map[q][i][1] - 1
+                        result.hexagons.push(new minesDB({revenue: 1, ownerID: result.players[playerIndex],playerStatus: 0, points: 0, q: q, r: (r + i), s: (s - i)}))
+                    }
+                    else if(map[q][i][0] == 'c')
+                    {
+                        let playerIndex:number = +map[q][i][1] - 1
+                        result.hexagons.push(new castlesDB({size: 2, ownerID: result.players[playerIndex],playerStatus: 0, points: 0, q: q, r: (r + i), s: (s - i)}))
+                    }
                     else{
                         result.hexagons.push(new plainsDB({hexaStatus: 0, ownerID:"", playerStatus: 0, points: 0, q: q, r: (r + i), s: (s - i),}));// i:( q * mapSize + i)
                     }
