@@ -16,6 +16,7 @@ import getSocket from "../socket";
 import { nullable, number } from "zod";
 import { playerSchema } from "../db/schema/PlayerSchema";
 import { type } from "os";
+import ApplicationError from "../utils/error/application.error";
 
 export class PlayerService extends BaseService
 {
@@ -69,8 +70,8 @@ export class PlayerService extends BaseService
     
     async makeMove(gameID: string, playerID: string, hexagonSrcID: string, hexagonDstID: string)
     {
-      
-        
+            //throw new ApplicationError({message:"nova poruka", code:440, type:ApplicationError.type.INTERNAL})
+            
             // if(hexagonSrc.ownerID?._id == playerID)
             // {
                 //middleware playerid == userid == tokeind

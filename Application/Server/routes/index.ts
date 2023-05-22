@@ -13,9 +13,9 @@ export default function (app: Express) {
     app.use("/user", userRoute);
     app.use("/game", gameRoute);
     //app.use("/hexagon", hexagonRoute)
-    app.use((req, res, next) => {
-        next(new ApplicationError(httpErrorTypes.RESOURCE_NOT_FOUND));
-    });
+    // app.use((req, res, next) => {
+    //     next(new ApplicationError(httpErrorTypes.RESOURCE_NOT_FOUND));
+    // });
     app.use(ErrorController.errorHandler);
 
 }

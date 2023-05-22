@@ -12,7 +12,6 @@ export async function makeMove(gameID: string, hexagonSrc: Hexagon, hexagonDst: 
         method: "PUT",
         payload: {gameID: gameID, hexagonSrcID: hexagonSrc._id, hexagonDstID: hexagonDst._id, playerID: playerID, points: 20, userID: localStorage.getItem("userToken")}
     })
-
     return result;
 }
 export async function endTurn(gameID: string, playerID: string) {

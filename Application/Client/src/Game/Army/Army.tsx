@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 //import { Figure } from '../Figure.dto';
 import { OnClickStrategy } from '../OnClickStrategy';
 //import { ArmyDto } from './Army.dto'
@@ -10,13 +10,17 @@ function Army() {
   
   const appContext = useContext(AppContext);
   const [prevClickStrategy, setPrevClickStrategy] = useState();
+  const serverMessageRef = useRef<serverMessage[]>()
 
   useEffect(() => {
     setPrevClickStrategy(appContext?.onClickStrategy);
     console.log(appContext?.onClickStrategy)
   }, [appContext?.onClickStrategy])
 
-
+  useEffect(() => {
+    if(appContext?.serverMessage)
+      serverMessageRef.current = appContext.serverMessage
+  }, [appContext?.serverMessage])
   class Hexa
   {
       q: number;
@@ -31,7 +35,11 @@ function Army() {
       }
   }
 
-
+  interface serverMessage
+  {
+    id: number;
+    text: string;
+  }
 
   class SwapStrategy extends OnClickStrategy
   {
@@ -68,10 +76,16 @@ function Army() {
     }
 
 
-    onClick(index: number, hexagons: Hexagon[]): void {
+    async onClick(index: number, hexagons: Hexagon[]) {
       
       const hexagon = hexagons[index];
       //console.log(hexagon)
+
+
+      appContext?.setHexagons(appContext?.hexagons.map((hex:Hexagon) => {    
+        hex.opacity = 1
+        return hex
+      }));
 
 
 
@@ -96,7 +110,7 @@ function Army() {
         return
       }
 
-      makeMove(appContext?.GameID, appContext?.currentHexagon, hexagon, appContext?.PlayerID);
+      const result = await makeMove(appContext?.GameID, appContext?.currentHexagon, hexagon, appContext?.PlayerID);
       // appContext?.setHexagons(hexagons.map((h) => {
       //   if(h._id == hexagon._id)
       //   {
@@ -108,11 +122,50 @@ function Army() {
       //   }
       //   return h;
       // }))
+      if(!result.success){
+        if(serverMessageRef.current == undefined) return
+        
+        let serverMessage: serverMessage[] = serverMessageRef.current;
+        let index = Math.ceil(Math.random() * 10000000)
+        serverMessage.push({id: index, text: result.error.message});
+        appContext?.setServerMessage(serverMessage);
+
+        // let serverMessageClass: serverMessage[] = appContext?.serverMessageClass;
+        // serverMessageClass.push({id: index, text:"fade-in"});
+        // appContext?.setServerMessageClass(serverMessageClass)
+        // console.log(serverMessageClass)
+
+        setTimeout(() => {
+            appContext?.setServerMessage([])
+
+          // console.log(appContext?.serverMessageClass.map((message, i) => {
+          //   if(message.id != index)
+          //     return message
+          //   else
+          //     return {id: message.id, text: "fade-out"}
+
+          // }))
+          // appContext?.setServerMessageClass(appContext?.serverMessageClass.map((message, i) => {
+          //   if(message.id != index)
+          //     return message
+          //   else
+          //     return {id: message.id, text: "fade-out"}
+
+          // }))
+          // setTimeout(() => {
+          //   appContext?.setServerMessage(appContext?.serverMessage.filter((message) => message.id != index))
+          //   appContext?.setServerMessageClass(appContext?.serverMessageClass.filter((message) => message.id != index))
+           
+          // }, 2000)
+        }, 4000)
+      }
+
       appContext.currentHexagon = undefined;
 
       appContext?.setCurrentHexagon(undefined);
 
       appContext?.setOnClickStrategy(prevClickStrategy);
+
 
     }
 

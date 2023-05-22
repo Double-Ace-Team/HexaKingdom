@@ -28,7 +28,11 @@ import Patterns from './Patterns';
 
 //NOTE: Figure == hexagon == HexaData
 
-
+interface serverMessage
+{
+  id: number;
+  text: string;
+}
 interface AppContextInterface 
 {
   onClickStrategy: any;
@@ -36,7 +40,11 @@ interface AppContextInterface
   setCurrentHexagon: any;
   currentHexagon: any;
   setHexagons: any;
-  hexagons: any,
+  hexagons: any;
+  setServerMessage: any;
+  serverMessage: serverMessage[];
+  setServerMessageClass: any;
+  serverMessageClass: serverMessage[];
   PlayerID: string | null;
   GameID: string | null;
 }
@@ -57,7 +65,6 @@ function Game(props: Props) {
     {
       //setHexagons(hexagons.map((hex) => {hex.opacity = 1; return hex}))
       super();
-      console.log("test")
 
     }
     onClick(index: number, hexagons: HexaData[]): void {
@@ -71,6 +78,8 @@ function Game(props: Props) {
   const [game, setGame] = useState<GameDTO>();
   const [onClickStrategy, setOnClickStrategy] = useState<OnClickStrategy | undefined>(undefined);
   const [currentHexagon, setCurrentHexagon] = useState<HexaData>();
+  const [serverMessage, setServerMessage] = useState<serverMessage[]>([]);
+  const [serverMessageClass, setServerMessageClass] = useState<serverMessage[]>([])
   const hexagonSize = { x: 10, y: 10 };
   //const moreHexas = GridGenerator.orientedRectangle(5, 5);
   const navigate = useNavigate();
@@ -139,7 +148,9 @@ function Game(props: Props) {
                                                 setHexagons: setHexagons, hexagons: hexagons,
                                                 currentHexagon: currentHexagon, setCurrentHexagon: setCurrentHexagon, 
                                                 PlayerID: localStorage.getItem("currentPlayer"),
-                                                GameID: localStorage.getItem("currentGame")
+                                                GameID: localStorage.getItem("currentGame"),
+                                                setServerMessage: setServerMessage, serverMessage: serverMessage, 
+                                                setServerMessageClass: setServerMessageClass, serverMessageClass: serverMessageClass
               
   }
 return (        
@@ -174,6 +185,9 @@ return (
           {AppContextValue.PlayerID == game?.turnForPlayerID ? (<button onClick={endTurnOnClick}>End turn</button>) : (<p>haha</p>)}
           <FigureFactory hexagon={currentHexagon} />
           <img src={pic} alt="" height={100} width={100} onClick={() => console.log(onClickStrategy)}/>
+
+          {serverMessage.map((message, i) =>  (<p key={i} className={`serverMessage ${serverMessageClass.find((msgClass) => msgClass.id == message.id)?.text}`}>{message.text}</p>))}
+          
         </Col>
         <Col md={2}></Col>
       </Row>

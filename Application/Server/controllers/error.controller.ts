@@ -8,10 +8,11 @@ import { formatError, sendResponse } from "../utils/response";
 
 export function errorHandler(err: Error, req: Request, res: Response, next: NextFunction) {
     if (err instanceof ApplicationError) {
-        const code = err.statusCode || 500
-        return res.status(code).json(formatError(err))
+        const code = err.code || 500
+        return res.status(code).json(formatError(err));
+       
     }
-
+   
     // if (err instanceof ZodError) {
     //     const code = 400;
     //     return res.status(code).json(formatError(err));
