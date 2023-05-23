@@ -1,5 +1,5 @@
 import mongoose, { MongooseDocumentMiddleware, ObjectId, Schema, mongo } from "mongoose";
-import { playersDB, usersDB, plainsDB, gamesDB } from "../db/db-model";
+import { playersDB, usersDB, plainsDB, gamesDB, armiesDB } from "../db/db-model";
 import { Game } from "../Model/Game";
 import { Hexagon, hexaStatus } from "../Model/Hexagon";
 import { Player, PlayerStatus } from "../Model/Player";
@@ -17,6 +17,7 @@ import { any, nullable, number } from "zod";
 import { playerSchema } from "../db/schema/PlayerSchema";
 import { type } from "os";
 import ApplicationError from "../utils/error/application.error";
+import { compareSync } from "bcrypt";
 
 export class PlayerService extends BaseService
 {
@@ -206,20 +207,44 @@ export class PlayerService extends BaseService
     {
         let gameDoc = await gamesDB.findById(gameID);
         let playerDoc = await playersDB.findById(playerID);
-
+        //console.log(gameDoc, playerDoc);
         this.checksValidation(gameDoc!.toObject(), playerDoc!.toObject(), 'redundant parameter');
         //Nuthin
+        if (gameDoc!.turnForPlayerID?.toString() != playerDoc!._id!.toString()) {throw new Error("Please wait for your turn to play");}
 
-        if(resources < 1000) {throw new Error("Not enough resources to create army");}
-        let castle = gameDoc?.hexagons.find(h => h.ownerID == playerDoc?.id && h.toObject().type == 'army')
-        gameDoc?.hexagons.forEach(h =>
+        //if(resources < 10) {throw new Error("Not enough resources to create army");}
+
+        let castleDoc = gameDoc?.hexagons.find(h => h.ownerID == playerDoc?.id && h.toObject().type == 'castle');
+        if (castleDoc == null) {throw new Error("Can't find players castle or player is destroyed");}
+        let hs = new HexagonService();
+
+        let flag = false;
+
+        for (let h of gameDoc!.hexagons) //Typescript: can only use procedural statements(continue, break) in for loop, not in for-each loop.
         {
-            if(h.toObject().type == 'a')
-            {
-              let a = 4;
-            }
+            
 
-        })
+            if (hs.isHexaNeighboor(castleDoc!.toObject(), h.toObject()) && h.toObject().type == 'plain') 
+            {
+                console.log(h, h.toObject().type);
+
+                gameDoc!.hexagons.push(new armiesDB({size: 10, moves: 3, hexaStatus: 1, ownerID: playerDoc?.id,
+                     playerStatus: 0, points: 0, q: h.q, r: h.r, s: h.s,}));
+
+
+                gameDoc?.hexagons.remove({_id: h._id});
+                flag = true;
+                break;
+            }
+         }
+
+         if(flag == false) {throw new Error("There are no available plain hexagons neighbooring the player's castle");}
+
+         playerDoc!.resources! -= resources;
+
+         await gameDoc?.save();
+         await playerDoc?.save();
+
         const io = getSocket.getInstance();
         io.of("main").to(gameID).emit("update_game");
 

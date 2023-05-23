@@ -17,4 +17,6 @@ router.put("/setResources", playerController.setResources.bind(playerController)
 
 router.put("/eliminatePlayer", playerController.eliminatePlayer.bind(playerController));
 
+router.put("/createNewArmy", playerController.createNewArmy.bind(playerController));
+
 export default router;
