@@ -148,7 +148,7 @@ export class PlayerService extends BaseService
         let game = await gamesDB.findById(gameID);
         let playerEnd = await playersDB.findById(playerEndID);
 
-        this.checksValidation(game!.toObject(), playerEnd!.toObject(), game!.hexagons[0].toObject()); //last par is pseudo because fun. requries it.
+        this.checksValidation(game!.toObject(), playerEnd!.toObject(), game!.hexagons[0].toObject()); //last par is pseudo because funciton requires it.
 
         playerEnd!.playerStatus = PlayerStatus.Destroyed;
         playerEnd!.resources = -1;
@@ -163,9 +163,30 @@ export class PlayerService extends BaseService
             })
         game!.numbOfPlayers! -= 1;
         game!.players = game!.players.filter(p => p._id.toString() != playerEnd!._id.toString());
-        
+
+        //endgame
+        let playerWonDoc;
+        let userWonDoc;
+        if(game?.numbOfPlayers == 1) 
+        {
+            game.isFinished = true;
+            game.playerWonID = game.players[0]!._id;
+
+            playerWonDoc =await playersDB.findById(game.playerWonID);
+            playerWonDoc!.playerStatus = PlayerStatus.Won;
+
+            userWonDoc = await usersDB.findById(playerWonDoc!.user!); //!!!
+            //If you use find(), you won't get access to properties.
+        }
+
         await game?.save();
         await playerEnd?.save();
+        await playerWonDoc?.save();
+        
+        if(game?.isFinished == true) 
+        {console.log(`The game has finished. User with name ${userWonDoc?.username} and playerID ${playerWonDoc?.id} has won!
+        Congratulations!`);}
+        
 
         const io = getSocket.getInstance();
         io.of("main").to(gameID).emit("update_game");
