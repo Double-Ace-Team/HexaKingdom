@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import Army from './Army/Army';
+import Army from './Figures/Army';
 //import { Figure } from './Figure.dto';
 import { useContext } from 'react';
 import { Hexagon } from '../Model/Hexagon';
