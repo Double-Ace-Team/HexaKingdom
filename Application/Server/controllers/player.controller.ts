@@ -124,6 +124,28 @@ export class PlayerController extends BaseController
         }
     }
 
+    async createNewArmy(req: Request, res: Response, next: NextFunction)
+    {
+        try
+        {
+            const gameID = req.body.gameID as string;
+
+            const playerID = req.body.playerID as string;                  
+
+            const resources = req.body.resources as number;
+
+            this.checkValidatons(gameID, playerID, 'redundant parameter', 'redundant parameter', resources);
+                    
+            let payload = await this.unit.players.createNewArmy(gameID, playerID, resources);
+
+            return sendResponse(res, payload);
+        }
+        catch (error)
+        {
+            next(error);
+        }
+    }
+
     async endTurn(req: Request, res: Response, next: NextFunction)
     {
 
