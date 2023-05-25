@@ -27,7 +27,7 @@ function Army() {
     }
 
 
-  }, [])
+  }, [appContext?.currentHexagon])
   
   useEffect(() => {
     if(appContext?.serverMessage)
@@ -58,8 +58,8 @@ function Army() {
   class SwapStrategy extends OnClickStrategy
   {
 
-    private prevClickStrategy:any;
-
+    private prevClickStrategy:OnClickStrategy;
+    
     constructor()
     {
 
@@ -145,7 +145,7 @@ function Army() {
 
 
   return (
-    <div>Army {appContext?.PlayerID == army?.ownerID ? (<p></p>) : null}</div>
+    <div>Army {appContext?.PlayerID == army?.ownerID ? (<p>Moves left: {army?.moves}</p>) : null}</div>
   )
 }
 

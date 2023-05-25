@@ -275,19 +275,31 @@ export class PlayerService extends BaseService
     {
 
             let ps = new PlayerService();
+            
             let gs = new GameService();
+            
             let player = await ps.get(playerID) as Player; //this.unit.players Ovo zbog obrazca da se popravi?
-            if(player == null) return;
+           
+            //if(player == null) return;
+            
             let game = await gs.get(gameID) as Game; //this.unit.games
-            if(game == null) return;
+            //if(game == null) throw Error("Game null");
+            
             if(game.turnForPlayerID != player._id?.toString())
                 return;//send response false || throw error
+
+            await this.getResources(game, playerID);
+            
+            await this.addMoves(gameID, playerID);
+
             let newPlayerID: string = "";
+
             for(let i = 0; i < game.players.length; i++)
             {
                 if(game.turnForPlayerID == game.players[i]._id?.toString())
                 {
                     i = (i + 1) % game.players.length;
+                  
                     newPlayerID = game.players[i]._id?.toString()!;
 
                     break;
@@ -303,7 +315,56 @@ export class PlayerService extends BaseService
             
     }
 
-     checkMoveLogic(game: Game, player: Player, hexagonSrc: Army, hexagonDst: Hexagon)
+
+    async addMoves(gameID: string, playerID: string)
+    {
+        let gameDoc = await gamesDB.findById(gameID);
+
+        let playerDoc = await playersDB.findById(playerID);
+
+
+        // for(let i = 0; i < gameDoc?.hexagons?.length; i++)
+        // {
+
+        // }
+        gameDoc?.hexagons.forEach((hexagon: any) => {
+            
+            if(hexagon.ownerID == playerDoc?.id && hexagon.toObject().type == 'army')
+            {
+                hexagon.$set('moves', 2);
+            }
+        })
+
+        await gameDoc?.save();
+
+    }
+    async getResources(game: Game, playerID: string)
+    {
+       
+       
+        let playerDoc = await playersDB.findById(playerID);
+       
+        let resources = 0;
+
+        game.hexagons.forEach((hexagon: any) => {
+
+            console.log(hexagon)
+            if(hexagon.ownerID == playerDoc?.id && hexagon.toObject().type == 'mine')
+            {
+                resources++;
+            }
+        })
+       
+        if(playerDoc?.resources == undefined) throw Error("Players resources undefined");
+       
+        playerDoc.resources += resources;
+        
+        await playerDoc.save();
+        
+    }
+    
+
+    checkMoveLogic(game: Game, player: Player, hexagonSrc: Army, hexagonDst: Hexagon)
     {
         if (game.turnForPlayerID != player._id!.toString()) {throw new Error("Please wait for your turn to play");}
         if(hexagonSrc._id == hexagonDst._id) {throw new Error("Army can't jump to itself");}

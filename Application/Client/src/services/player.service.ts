@@ -23,3 +23,12 @@ export async function endTurn(gameID: string, playerID: string) {
 
     return result;
 }
+
+export async function createNewArmy(gameID: string, playerID: string){
+    const result = await fetchResult(`${BASE_URL}/createNewArmy`, {
+        method: "PUT",
+        payload: {gameID: gameID, playerID: playerID, userID: localStorage.getItem("userToken")}
+    })
+
+    return result;
+}
