@@ -94,7 +94,7 @@ export class PlayerController extends BaseController
             
 
             
-           let payload = await this.unit.players.setResources(gameID, playerID, hexagonID, resources);
+           let payload = await this.unit.hexagons.setResources(gameID, playerID, hexagonID, resources);
 
             return sendResponse(res, payload);
         }
@@ -132,11 +132,11 @@ export class PlayerController extends BaseController
 
             const playerID = req.body.playerID as string;                  
 
-            const resources = 1//req.body.resources as number;
+            
 
-            this.checkValidatons(gameID, playerID, 'redundant parameter', 'redundant parameter', resources);
+            this.checkValidatons(gameID, playerID, 'redundant parameter', 'redundant parameter', 1);
                     
-            let payload = await this.unit.players.createNewArmy(gameID, playerID, resources);
+            let payload = await this.unit.hexagons.createNewArmy(gameID, playerID);
 
             return sendResponse(res, payload);
         }

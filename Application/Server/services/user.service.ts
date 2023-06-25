@@ -10,7 +10,7 @@ export class UserService extends BaseService
 
         try 
         {
-
+            console.log(user);
             const result = await usersDB.create(user); 
             
             return result;

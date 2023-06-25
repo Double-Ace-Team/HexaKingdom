@@ -102,15 +102,7 @@ export class PlayerService extends BaseService
             
             //console.log(hexagonDst, hexagonDst.type, hexagonDst.size, hexagonDst.moves);
 
-            // let strategy: IMoveStrategy;
-            // let swapcord: swapCoordinates = new swapCoordinates;
-            // strategy = swapcord;     
-            // strategy.moveLogic();
-
-            // let removeHexagon: RemoveHexagon = new RemoveHexagon();
-            // strategy = removeHexagon;
-            // strategy.moveLogic();
-          
+            
             let strategy;
             if (hexagonDst.type == 'plain') {
             strategy = new PlainMoveStrategy();
@@ -119,55 +111,19 @@ export class PlayerService extends BaseService
             }
             await strategy.moveLogic(gameID, hexagonSrc, hexagonDst);
 
-            // if(hexagonDst.type  == 'plain')
-            // {   
-            //     await hs.swapCoordinates(gameID, hexagonSrc, hexagonDst);
-             
-            // }
-            // else
-            // {
-            //   if(hexagonDst.ownerID == hexagonSrc.ownerID && (hexagonDst.type == "mine" || hexagonDst.type == "castle" || hexagonDst.type == 'army')) 
-            //   {throw new Error("Can't move on your army, mine or castle");}
-
-            //   //3 slucaja: vojska polje, rudnik polje, tvrdjava polje
-            //   //logic for points losing, calculation...
-            //   if(hexagonDst.type == "mine")
-            //   {
-            //     await hs.swapCoordinates(gameID, hexagonSrc, hexagonDst); //later: if mine has defence points, calculate army vs mine point with mb probability
-            //   }
-            //   else if (hexagonDst.type == "army")
-            //   {
-            //     if (hexagonSrc.size > hexagonDst.size) //Math.random() < 1/2
-            //     {
-            //         await hs.swapCoordinates(gameID, hexagonSrc, hexagonDst); //later: creating new Army
-            //     }
-            //     else          
-            //     {
-            //       await hs.removeHexagon(gameID, hexagonSrc);
-            //     }
-            //   }
-            //   else if (hexagonDst.type == "castle")
-            //   {
-            //     if (hexagonSrc.size > hexagonDst.size * 2)  //Math.random() < 1/4
-            //     {
-            //         this.eliminatePlayer(gameID, hexagonDstID);
-            //     }
-            //     else          
-            //     {
-            //       await hs.removeHexagon(gameID, hexagonSrc);
-            //     }
-            //   }
-            //   else {throw new Error("Nemoguci slucaj");}
-            // }
+            
 
             return payload;                     
     }
 
-    async eliminatePlayer(gameID: string, playerEndID: string)
+    async eliminatePlayer(gameID: string, hexagonDstID: string)
     {
+       // console.log(hexagonDstID);
         let game = await gamesDB.findById(gameID);
-        let playerEnd = await playersDB.findById(playerEndID);
-
+        let hexagonDst = game?.hexagons.find(h => h.id == hexagonDstID);
+      //  console.log(hexagonDst);
+        let playerEnd = await playersDB.findById(hexagonDst?.ownerID);
+       // console.log(playerEnd);
         this.checksValidation(game!.toObject(), playerEnd!.toObject(), game!.hexagons[0].toObject()); //last par is pseudo because funciton requires it.
 
         playerEnd!.playerStatus = PlayerStatus.Destroyed;
@@ -212,84 +168,9 @@ export class PlayerService extends BaseService
         io.of("main").to(gameID).emit("update_game");
     }
 
-    async setResources(gameID: string, playerID: string, hexagonID: string, resources: number)
-    {
-        let game = await gamesDB.findById(gameID);
-        let player = await playersDB.findById(playerID);
-        let hexagon = game?.hexagons.find(h => h._id?.toString() == hexagonID) as any; 
-        let ind: number = game!.hexagons.findIndex(h => h._id!.toString() == hexagonID);
-
-        hexagon = JSON.parse(JSON.stringify(hexagon)); 
-
-        this.checksValidation(game!.toObject(), player!.toObject(), hexagon);
-        if(resources < 0) {throw new Error("Negative value for resources not allowed");}
-
-        if(hexagon.ownerID.toString() != player!._id?.toString()) {throw new Error("Source hexagon with given ID doesn't belong to player");}
-        
-
-        if(hexagon.type == 'army' || hexagon.type == 'castle') 
-        { game?.hexagons[ind].$set('size', hexagon.size + resources);}
-        else if(hexagon.type == 'mine') 
-        {game?.hexagons[ind].$set('revenue', hexagon.revenue + resources);}
-        else 
-        {throw new Error("Can't place resources on plain hexagon or unknown error");}
-
-        player!.resources! -= resources;
-        await game?.save();
-        await player?.save();
-
-        const io = getSocket.getInstance();
-        io.of("main").to(gameID).emit("update_game");
-                                
-    }
 
     //async
-    async createNewArmy(gameID: string, playerID: string, resources: number)
-    {
-        let gameDoc = await gamesDB.findById(gameID);
-        let playerDoc = await playersDB.findById(playerID);
-        //console.log(gameDoc, playerDoc);
-        this.checksValidation(gameDoc!.toObject(), playerDoc!.toObject(), 'redundant parameter');
-        //Nuthin
-        if (gameDoc!.turnForPlayerID?.toString() != playerDoc!._id!.toString()) {throw new Error("Please wait for your turn to play");}
-
-        //if(resources < 10) {throw new Error("Not enough resources to create army");}
-
-        let castleDoc = gameDoc?.hexagons.find(h => h.ownerID == playerDoc?.id && h.toObject().type == 'castle');
-        if (castleDoc == null) {throw new Error("Can't find players castle or player is destroyed");}
-        let hs = new HexagonService();
-
-        let flag = false;
-
-        for (let h of gameDoc!.hexagons) //Typescript: can only use procedural statements(continue, break) in for loop, not in for-each loop.
-        {
-            
-
-            if (hs.isHexaNeighboor(castleDoc!.toObject(), h.toObject()) && h.toObject().type == 'plain') 
-            {
-                console.log(h, h.toObject().type);
-
-                gameDoc!.hexagons.push(new armiesDB({size: 10, moves: 3, hexaStatus: 1, ownerID: playerDoc?.id,
-                     playerStatus: 0, points: 0, q: h.q, r: h.r, s: h.s,}));
-
-
-                gameDoc?.hexagons.remove({_id: h._id});
-                flag = true;
-                break;
-            }
-         }
-
-         if(flag == false) {throw new Error("There are no available plain hexagons neighbooring the player's castle");}
-
-         playerDoc!.resources! -= resources;
-
-         await gameDoc?.save();
-         await playerDoc?.save();
-
-        const io = getSocket.getInstance();
-        io.of("main").to(gameID).emit("update_game");
-
-    }
+    
 
     async endTurn(gameID: string, playerID: string)
     {
@@ -358,7 +239,7 @@ export class PlayerService extends BaseService
         await gameDoc?.save();
 
     }
-    async getResources(game: Game, playerID: string)
+    async getResources(game: Game, playerID: string) //collectResources from Mine
     {
        
        

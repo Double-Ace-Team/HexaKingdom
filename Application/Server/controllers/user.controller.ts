@@ -14,8 +14,9 @@ export class UserController extends BaseController
         try 
         {
 
-            const user = req.body as User;
-            
+            const user = req.body.user as User;
+            console.log("Kontroler", user);
+            console.log(user.username, user.password, user._id);
             const payload = await this.unit.users.create(user);
 
             if(!payload) throw new ApplicationError(httpErrorTypes.RESOURCE_NOT_FOUND);
