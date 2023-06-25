@@ -6,10 +6,12 @@ import { mineSchema } from "./schema/Hexagons/MineSchema";
 import { hexaSchema } from "./schema/HexagonSchema";
 import { playerSchema } from "./schema/PlayerSchema";
 import { userSchema } from "./schema/UserSchema";
+import { messageSchema } from "./schema/MessageSchema";
 
 
 
 const gamesDB = mongoose.model('games', gameSchema);
+const messageDB = mongoose.model('messages', messageSchema);
 const hexasDB = mongoose.model('hexas', hexaSchema);
 const playersDB = mongoose.model('players', playerSchema);
 const usersDB = mongoose.model('users', userSchema);
@@ -21,6 +23,7 @@ export
 {
     gamesDB,
     //hexasDB,
+    messageDB,
     playersDB,
     usersDB,
     armiesDB,

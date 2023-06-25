@@ -23,6 +23,7 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Patterns from './Patterns';
+import MessageBox from './MessageBox';
 
 
 
@@ -141,7 +142,7 @@ function Game(props: Props) {
     return () => {
         socketContext?.off("update_game");
     }
-  })
+  }, [])
 
   const AppContextValue: AppContextInterface = { 
                                                 onClickStrategy:onClickStrategy, setOnClickStrategy : setOnClickStrategy, 
@@ -159,7 +160,11 @@ return (
       
       <AppContext.Provider value={AppContextValue}>
       <Row>
-        <Col md={3}></Col>
+        <Col md={3}>         
+          <Container>
+            <MessageBox/>
+          </Container>
+        </Col>
         <Col md={6} >
           <div className="" style={{"width": "100%", "height": "100vh", "backgroundColor": "yellow", "margin": "0 auto"}}>
           <HexGrid width={"100%"} viewBox="-20 -10 100 100">
@@ -183,9 +188,9 @@ return (
         <Col md={1} >
           <p>Currently selected tile: {currentHexagon?._id} </p>
           {AppContextValue.PlayerID == game?.turnForPlayerID ? (<button onClick={endTurnOnClick}>End turn</button>) : (<p>haha</p>)}
+          <p>Current resources: {game?.players.find(player => player._id == AppContextValue.PlayerID)?.resources}</p>
           <FigureFactory hexagon={currentHexagon} />
           <img src={pic} alt="" height={100} width={100} onClick={() => console.log(onClickStrategy)}/>
-
           {serverMessage.map((message, i) =>  (<p key={i} className={`serverMessage ${serverMessageClass.find((msgClass) => msgClass.id == message.id)?.text}`}>{message.text}</p>))}
           
         </Col>

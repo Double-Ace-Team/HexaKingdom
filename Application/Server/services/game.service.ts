@@ -1,8 +1,11 @@
 import mongoose, { Types } from "mongoose";
-import { armiesDB, castlesDB, gamesDB, minesDB, plainsDB, playersDB } from "../db/db-model";
+import { armiesDB, castlesDB, gamesDB, messageDB, minesDB, plainsDB, playersDB, usersDB } from "../db/db-model";
 import { Game } from "../Model/Game";
 import { Player } from "../Model/Player";
 import { BaseService } from "./base.service";
+import getSocket from "../socket";
+import { Message } from "../Model/Message";
+import { User } from "../Model/User";
 
 export class GameService extends BaseService
 {
@@ -335,18 +338,20 @@ export class GameService extends BaseService
                     if(map[q][i][0] == 'a')
                     {
                         let playerIndex:number = +map[q][i][1] - 1
-
+                        console.log(playerIndex);
+                        console.log(result.players[playerIndex])
+                        console.log(result.players)
                         result.hexagons.push(new armiesDB({size: 10, moves: 3, hexaStatus: 0, ownerID: result.players[playerIndex], playerStatus: 0, points: 0, q: q, r: (r + i), s: (s - i),}));// i:( q * mapSize + i)
                     }
                     else if(map[q][i][0] == 'm')
                     {
                         let playerIndex:number = +map[q][i][1] - 1
-                        result.hexagons.push(new minesDB({revenue: 1, ownerID: result.players[playerIndex],playerStatus: 0, points: 0, q: q, r: (r + i), s: (s - i)}))
+                        result.hexagons.push(new minesDB({revenue: 1, ownerID: result.players[playerIndex], playerStatus: 0, points: 0, q: q, r: (r + i), s: (s - i)}))
                     }
                     else if(map[q][i][0] == 'c')
                     {
                         let playerIndex:number = +map[q][i][1] - 1
-                        result.hexagons.push(new castlesDB({size: 2, ownerID: result.players[playerIndex],playerStatus: 0, points: 0, q: q, r: (r + i), s: (s - i)}))
+                        result.hexagons.push(new castlesDB({size: 2, ownerID: result.players[playerIndex], playerStatus: 0, points: 0, q: q, r: (r + i), s: (s - i)}))
                     }
                     else{
                         result.hexagons.push(new plainsDB({hexaStatus: 0, ownerID:"", playerStatus: 0, points: 0, q: q, r: (r + i), s: (s - i),}));// i:( q * mapSize + i)
@@ -373,7 +378,22 @@ export class GameService extends BaseService
         return null;
 
     }
+    async sendMessage(gameID: string, userID: string, text: string)
+    {
+        const result = await gamesDB.findById(gameID); 
+        const user = await usersDB.findById(userID);
 
+        if(!result || !user)
+            return new Error();
+
+        result.messages.push(new messageDB({username: user.username, userID: user.id, text: text, createdAt: Date.now()}));
+
+        await result.save();
+        
+        //CHANGE EVENT TO MESSAGE_SENT EVENT
+        const io =getSocket.getInstance();
+        io.of("main").to(gameID).emit("update_game");
+    }
     async getNonStartedGames()
     {
         try{
