@@ -6,12 +6,19 @@ import  Game from './Model/Game'
 import { SocketContext } from './App'
 
 import Table from 'react-bootstrap/Table';
+import Form from 'react-bootstrap/esm/Form'
+import { Button, Col, Container, Row } from 'react-bootstrap'
 
 function GameListPage() {
     
-    const [games, setGames] = useState<any[]>()
+    const [games, setGames] = useState<any[]>();
+
+    const [newGameMap, setNewGameMap] = useState<string>("testMap");
+    const [newGameSize, setNewGameSize] = useState<number>(2);
+    const [showNewGameForm, setShowNewGameForm] = useState<boolean>(false);
     const navigate = useNavigate();
-    const socketContext = useContext(SocketContext)
+
+    const socketContext = useContext(SocketContext);
     
     async function getGames()
     {
@@ -46,7 +53,21 @@ function GameListPage() {
         }
     }, [games])
 
+    const handleCreateGame = async (event: React.FormEvent) => {
+            event.preventDefault();
+            
+            const result = await create();
+            if(!result.success)
+            {
+                alert("greska");
+                return;
+            }
+            localStorage.setItem("currentGame", result.data._id);
+            localStorage.setItem("currentPlayer", result.data.playerID);
+    
+            navigate(`/game/${result.data._id}`)
 
+    }
     async function onJoinClick(gameID: string | undefined)
     {
         if(!gameID) return;
@@ -82,8 +103,8 @@ function GameListPage() {
     }//            {games?.map((game, index) => (<div key={index}>{game._id} <button onClick={() => onJoinClick(game._id)}>Join</button> </div>))} 
 
     return (
-        <div>
-
+        <Container>
+        <Row>
             <Table striped="columns">
             <thead>
                 <tr>
@@ -101,15 +122,36 @@ function GameListPage() {
                     <td>{game._id} </td>
                     <td>{game.userCreatedID?.username}</td>
                     <td>{game.players?.length}</td>
-                    <td>haha</td>
                     <td> <button onClick={() => onJoinClick(game._id)}>Join</button> </td>
                 
                 </tr>))} 
             </tbody>
             </Table>
+        </Row>
+        <Row className="justify-content-md-center">
+            <Col xs={4}>
+                <Button variant="primary" onClick={() => {setShowNewGameForm(!showNewGameForm)}}>New Game</Button>
+                {showNewGameForm ?   
+                <Form onSubmit={handleCreateGame}>
 
-            <button onClick={onNewGameClick}>new game</button>
-        </div>
+                    <Form.Group>
+                        <Form.Label>Game size:</Form.Label>
+                        <Form.Select value={newGameSize} onChange={(e: any) => {setNewGameSize(e.target.value)}}>
+                        <option value={2}>2</option>
+                        <option value={4}>4</option>                      
+                        </Form.Select>
+                    </Form.Group>
+                    <Form.Group>
+                        <Form.Label>Game map:</Form.Label>
+                        <Form.Select value={newGameMap} onChange={(e: any) => {setNewGameMap(e.target.value)}}>
+                        <option value={"testMap"}>testMap</option>
+                        </Form.Select>
+                    </Form.Group>
+                    <Button variant="primary" type="submit">Create new Game</Button>
+                </Form> : null }
+            </Col>
+        </Row> 
+        </Container>
         
 
     )

@@ -7,7 +7,6 @@ function Login() {
     const [password, setPassword] = useState("");
   
     const handleSubmit = async (event: React.FormEvent) => {
-        console.log("haha")
         //Prevent page reload
         event.preventDefault();
         console.log(username)
@@ -47,19 +46,17 @@ function Login() {
 //   </div>
     <Form className="mx-auto" style={{"width": "200px"}} onSubmit={handleSubmit}>
         <Form.Group className="mb-3" controlId="username">
-        <Form.Label>Username</Form.Label>
-        <Form.Control type="text" name="uname" placeholder="Username"  onChange={e => setUsername(e.target.value)} required/>
+            <Form.Label>Username</Form.Label>
+            <Form.Control type="text" name="uname" placeholder="Username"  onChange={e => setUsername(e.target.value)} required/>
 
         </Form.Group>
 
         <Form.Group className="mb-3" controlId="password">
-        <Form.Label>Password</Form.Label>
-        <Form.Control type="password" placeholder="Password" onChange={e => setPassword(e.target.value)} required />
+            <Form.Label>Password</Form.Label>
+            <Form.Control type="password" placeholder="Password" onChange={e => setPassword(e.target.value)} required />
         </Form.Group>
 
-        <Button onClick={() => console.log(username)} variant="primary" type="submit">
-        Submit
-        </Button>
+        <Button onClick={() => console.log(username)} variant="primary" type="submit">Submit</Button>
     </Form>
 
   )
