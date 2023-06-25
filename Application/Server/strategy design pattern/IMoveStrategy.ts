@@ -67,7 +67,7 @@ class MineMoveStrategy extends HexagonMoveStrategy {
     async moveLogic(gameID: string, hexagonSrc: Army, hexagonDst: any) {
       if (true) { //hexagonSrc.size > hexagonDst.size * 2
         let ps = new PlayerService();
-        ps.eliminatePlayer(gameID, hexagonDst._id!.toString());
+        await ps.eliminatePlayer(gameID, hexagonDst._id!.toString());
       } else {
         await this.hs.removeHexagon(gameID, hexagonSrc);
       }

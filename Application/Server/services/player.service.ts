@@ -130,13 +130,22 @@ export class PlayerService extends BaseService
         playerEnd!.resources = -1;
         let hs = new HexagonService();
 
-        game!.hexagons.forEach(h =>
-            {
-                if(h.ownerID == playerEnd?.id)
+        await game?.save();
+        for(let i=0; i<game!.hexagons.length; i++)
+        {
+            if(game?.hexagons[i].ownerID == playerEnd?.id)
                 {
-                    hs.removeHexagon(game!._id?.toString()!, h.toObject());                    
+                    await hs.removeHexagon(game!._id?.toString()!, game!.hexagons[i].toObject());                    
                 }
-            })
+        }
+        // game!.hexagons.forEach(async h =>
+        //     {
+        //         if(h.ownerID == playerEnd?.id)
+        //         {
+        //             await hs.removeHexagon(game!._id?.toString()!, h.toObject());                    
+        //         }
+        //     })
+        game = await gamesDB.findById(gameID);
         game!.numbOfPlayers! -= 1;
         game!.players = game!.players.filter(p => p._id.toString() != playerEnd!._id.toString());
 
