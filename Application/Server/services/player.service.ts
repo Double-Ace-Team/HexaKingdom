@@ -18,7 +18,7 @@ import { playerSchema } from "../db/schema/PlayerSchema";
 import { type } from "os";
 import ApplicationError from "../utils/error/application.error";
 import { compareSync } from "bcrypt";
-
+import { HexagonMoveStrategy, IMoveStrategy, PlainMoveStrategy} from "../strategy design pattern/IMoveStrategy";
 export class PlayerService extends BaseService
 {
     hexagonRepository: HexagonRepository;
@@ -91,54 +91,74 @@ export class PlayerService extends BaseService
             this.checksValidation(game, player, hexagonDst);
             this.checkMoveLogic(game, player, hexagonSrc, hexagonDst);
 
+            
+            if(hexagonDst.ownerID == hexagonSrc.ownerID && (hexagonDst.type == "mine" || hexagonDst.type == "castle" || hexagonDst.type == 'army')) 
+            {throw new Error("Can't move on your army, mine or castle");}
+
                       
             let hs = new HexagonService();
 
             let payload: any;
             
             //console.log(hexagonDst, hexagonDst.type, hexagonDst.size, hexagonDst.moves);
-            
-           
-            if(hexagonDst.type  == 'plain')
-            {   
-                await hs.swapCoordinates(gameID, hexagonSrc, hexagonDst);
-             
-            }
-            else
-            {
-              if(hexagonDst.ownerID == hexagonSrc.ownerID && (hexagonDst.type == "mine" || hexagonDst.type == "castle" || hexagonDst.type == 'army')) 
-              {throw new Error("Can't move on your army, mine or castle");}
 
-              //3 slucaja: vojska polje, rudnik polje, tvrdjava polje
-              //logic for points losing, calculation...
-              if(hexagonDst.type == "mine")
-              {
-                await hs.swapCoordinates(gameID, hexagonSrc, hexagonDst); //later: if mine has defence points, calculate army vs mine point with mb probability
-              }
-              else if (hexagonDst.type == "army")
-              {
-                if (hexagonSrc.size > hexagonDst.size) //Math.random() < 1/2
-                {
-                    await hs.swapCoordinates(gameID, hexagonSrc, hexagonDst); //later: creating new Army
-                }
-                else          
-                {
-                  await hs.removeHexagon(gameID, hexagonSrc);
-                }
-              }
-              else if (hexagonDst.type == "castle")
-              {
-                if (hexagonSrc.size > hexagonDst.size * 2)  //Math.random() < 1/4
-                {
-                    this.eliminatePlayer(gameID, hexagonDstID);
-                }
-                else          
-                {
-                  await hs.removeHexagon(gameID, hexagonSrc);
-                }
-              }
-              else {throw new Error("Nemoguci slucaj");}
+            // let strategy: IMoveStrategy;
+            // let swapcord: swapCoordinates = new swapCoordinates;
+            // strategy = swapcord;     
+            // strategy.moveLogic();
+
+            // let removeHexagon: RemoveHexagon = new RemoveHexagon();
+            // strategy = removeHexagon;
+            // strategy.moveLogic();
+          
+            let strategy;
+            if (hexagonDst.type == 'plain') {
+            strategy = new PlainMoveStrategy();
+            } else {
+            strategy = new HexagonMoveStrategy();
             }
+            await strategy.moveLogic(gameID, hexagonSrc, hexagonDst);
+
+            // if(hexagonDst.type  == 'plain')
+            // {   
+            //     await hs.swapCoordinates(gameID, hexagonSrc, hexagonDst);
+             
+            // }
+            // else
+            // {
+            //   if(hexagonDst.ownerID == hexagonSrc.ownerID && (hexagonDst.type == "mine" || hexagonDst.type == "castle" || hexagonDst.type == 'army')) 
+            //   {throw new Error("Can't move on your army, mine or castle");}
+
+            //   //3 slucaja: vojska polje, rudnik polje, tvrdjava polje
+            //   //logic for points losing, calculation...
+            //   if(hexagonDst.type == "mine")
+            //   {
+            //     await hs.swapCoordinates(gameID, hexagonSrc, hexagonDst); //later: if mine has defence points, calculate army vs mine point with mb probability
+            //   }
+            //   else if (hexagonDst.type == "army")
+            //   {
+            //     if (hexagonSrc.size > hexagonDst.size) //Math.random() < 1/2
+            //     {
+            //         await hs.swapCoordinates(gameID, hexagonSrc, hexagonDst); //later: creating new Army
+            //     }
+            //     else          
+            //     {
+            //       await hs.removeHexagon(gameID, hexagonSrc);
+            //     }
+            //   }
+            //   else if (hexagonDst.type == "castle")
+            //   {
+            //     if (hexagonSrc.size > hexagonDst.size * 2)  //Math.random() < 1/4
+            //     {
+            //         this.eliminatePlayer(gameID, hexagonDstID);
+            //     }
+            //     else          
+            //     {
+            //       await hs.removeHexagon(gameID, hexagonSrc);
+            //     }
+            //   }
+            //   else {throw new Error("Nemoguci slucaj");}
+            // }
 
             return payload;                     
     }
