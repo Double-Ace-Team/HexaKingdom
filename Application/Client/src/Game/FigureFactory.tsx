@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react'
-import Army from './Army/Army';
+import Army from './Figures/Army';
 //import { Figure } from './Figure.dto';
 import { useContext } from 'react';
 import { Hexagon } from '../Model/Hexagon';
+import Castle from './Figures/Castle';
 
 interface Props
 {
@@ -16,7 +17,10 @@ function FigureFactory(props: Props) {
   }, [])
   return (
     <div>
-        {(props.hexagon?.type == "army") ? (<Army />) : (<h2>"test2</h2>)}
+        {(props.hexagon?.type == "army") ? (<Army />) : null}
+        {(props.hexagon?.type == "castle") ? (<Castle />) : null}
+        {(props.hexagon?.type == "plain") ? (<p>plain</p>) : null}
+
     </div>
   )
 }

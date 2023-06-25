@@ -167,7 +167,7 @@ return (
 
             {/* Additional small grid, hexagons generated with generator */}
             <Layout size={hexagonSize} origin={{ x: 0, y: 0 }}>
-              { hexagons.map((hex, i) => <Hexagon key={i} q={hex.q} r={hex.r} s={hex.s} style={{ fill: "red", border: "2px solid black", fillOpacity: hex.opacity, }} fill={hexagons[i]?.img} onClick={() => {console.log(hex); onClickStrategy?.onClick(i, hexagons)}} />) }
+              { hexagons.map((hex, i) => <Hexagon key={i} q={hex.q} r={hex.r} s={hex.s} style={{ fill: "red", border: "2px solid black", fillOpacity: hex.opacity, }} fill={hexagons[i]?.img} onClick={() => {onClickStrategy?.onClick(i, hexagons)}} />) }
             </Layout>
 
             {/* You can define multiple patterns and switch between them with "fill" prop on Hexagon // insert images here*/}

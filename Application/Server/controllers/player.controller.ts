@@ -132,7 +132,7 @@ export class PlayerController extends BaseController
 
             const playerID = req.body.playerID as string;                  
 
-            const resources = req.body.resources as number;
+            const resources = 1//req.body.resources as number;
 
             this.checkValidatons(gameID, playerID, 'redundant parameter', 'redundant parameter', resources);
                     
