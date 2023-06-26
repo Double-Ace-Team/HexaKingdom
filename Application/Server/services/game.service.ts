@@ -6,6 +6,7 @@ import { BaseService } from "./base.service";
 import getSocket from "../socket";
 import { Message } from "../Model/Message";
 import { User } from "../Model/User";
+import ApplicationError from "../utils/error/application.error";
 
 export class GameService extends BaseService
 {
@@ -309,7 +310,10 @@ export class GameService extends BaseService
 
             const result = await gamesDB.findById(game._id); //result == game
             if(!result)
-                return null;
+                return new Error();
+            console.log(result.players.length,result.numbOfPlayers)
+            if(result.players.length != result.numbOfPlayers)
+                throw new ApplicationError("Not enough players");
 
             let s = 0;
             let r = 0;

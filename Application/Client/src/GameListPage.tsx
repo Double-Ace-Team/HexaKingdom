@@ -55,8 +55,12 @@ function GameListPage() {
 
     const handleCreateGame = async (event: React.FormEvent) => {
             event.preventDefault();
-            
-            const result = await create();
+            if(!newGameSize)
+            {
+                alert("Game size not set");
+                return;
+            }
+            const result = await create(newGameSize);
             if(!result.success)
             {
                 alert("greska");
@@ -90,7 +94,7 @@ function GameListPage() {
     }
     async function onNewGameClick()
     {
-        const result = await create();
+        const result = await create(newGameSize);
         if(!result.success)
         {
             alert("greska");

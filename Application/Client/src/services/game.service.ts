@@ -43,11 +43,11 @@ export async function join(gameID: string) {
     return result;
 }
 
-export async function create() {
+export async function create(numberOfPlayers: number) {
 
     const result = await fetchResult(`${BASE_URL}`, {
         method: "POST",
-        payload: {numberOfPlayers: 4, userID: localStorage.getItem("userToken")}
+        payload: {numberOfPlayers: numberOfPlayers, userID: localStorage.getItem("userToken")}
     })
     
     return result;
