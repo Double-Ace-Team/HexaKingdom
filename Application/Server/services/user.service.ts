@@ -9,7 +9,7 @@ export class UserService extends BaseService
         //const newPlayer = new playersDB(player);
 
         try 
-        {
+        {   console.log("test")
             console.log(user);
             const result = await usersDB.create(user); 
             

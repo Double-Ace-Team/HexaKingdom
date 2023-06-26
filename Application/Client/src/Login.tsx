@@ -2,30 +2,40 @@ import React, {useState, useEffect} from 'react'
 import { login } from './services/user.service';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-function Login() {
+import { useNavigate } from 'react-router-dom';
+interface Props{
+    setToken:any;
+}
+function Login(props: Props) {
+
     const [username, setUsername] = useState("twe");
     const [password, setPassword] = useState("");
-  
+    
+    const navigate = useNavigate();
+
     const handleSubmit = async (event: React.FormEvent) => {
         //Prevent page reload
         event.preventDefault();
-        console.log(username)
+
         if(!username)
             return;
         if(!password)
             return;
-        console.log({password, username})
+
         const result = await login({username, password});
-        console.log(result)
+
         if(!result.success)
         {
             alert('greska')
             return;
         }
-        console.log(result.data);
+
         localStorage.setItem("userToken", result.data._id);
+        localStorage.setItem("username", result.data.username);
+        
+        props.setToken(result.data._id)
     };
- 
+    
     return (
 //     <div>   
 //         <div className="form" onSubmit={handleSubmit}>
@@ -56,7 +66,9 @@ function Login() {
             <Form.Control type="password" placeholder="Password" onChange={e => setPassword(e.target.value)} required />
         </Form.Group>
 
-        <Button onClick={() => console.log(username)} variant="primary" type="submit">Submit</Button>
+        <Button variant="primary" type="submit">Login</Button>
+
+        <Button variant='secondary' onClick={() => {navigate("/register")}}>Register</Button>
     </Form>
 
   )

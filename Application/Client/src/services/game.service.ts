@@ -61,3 +61,12 @@ export async function start(gameID: string) {
     
     return result;
 }
+
+export async function sendMessage(gameID: string, text: string){
+    const result = await fetchResult(`${BASE_URL}/sendMessage`, {
+        method: "PUT",
+        payload: {gameID, userID: localStorage.getItem("userToken"), text: text}
+    });
+
+    return result;
+}

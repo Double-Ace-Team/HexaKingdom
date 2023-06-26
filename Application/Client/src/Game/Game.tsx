@@ -162,35 +162,41 @@ return (
       <Row>
         <Col md={3}>         
           <Container>
-            <MessageBox/>
+            <MessageBox gameID={game?._id} poruke={game?.messages} />
           </Container>
         </Col>
         <Col md={6} >
           <div className="" style={{"width": "100%", "height": "100vh", "backgroundColor": "yellow", "margin": "0 auto"}}>
-          <HexGrid width={"100%"} viewBox="-20 -10 100 100">
-            {/* Main grid with bit hexagons, all manual */}
+            <HexGrid width={"100%"} viewBox="-20 -10 100 100">
+              {/* Main grid with bit hexagons, all manual */}
 
-            {/* Additional small grid, hexagons generated with generator */}
-            <Layout size={hexagonSize} origin={{ x: 0, y: 0 }}>
-              { hexagons.map((hex, i) => <Hexagon key={i} q={hex.q} r={hex.r} s={hex.s} style={{ fill: "red", border: "2px solid black", fillOpacity: hex.opacity, }} fill={hexagons[i]?.img} onClick={() => {onClickStrategy?.onClick(i, hexagons)}} />) }
-            </Layout>
+              {/* Additional small grid, hexagons generated with generator */}
+              <Layout size={hexagonSize} origin={{ x: 0, y: 0 }}>
+                { hexagons.map((hex, i) => <Hexagon key={i} q={hex.q} r={hex.r} s={hex.s} style={{ fill: "red", border: "2px solid black", fillOpacity: hex.opacity, }} fill={hexagons[i]?.img} onClick={() => {onClickStrategy?.onClick(i, hexagons)}} />) }
+              </Layout>
 
-            {/* You can define multiple patterns and switch between them with "fill" prop on Hexagon // insert images here*/}
-            {/* <Pattern id="pat-1" link={pic} size={hexagonSize} />
-            <Pattern id="pat-2" link={sword} size={hexagonSize} /> */}
-            <Patterns hexagonSize={hexagonSize}/>
-            {/* insert functions here */}
+              {/* You can define multiple patterns and switch between them with "fill" prop on Hexagon // insert images here*/}
+              {/* <Pattern id="pat-1" link={pic} size={hexagonSize} />
+              <Pattern id="pat-2" link={sword} size={hexagonSize} /> */}
+              <Patterns hexagonSize={hexagonSize}/>
+              {/* insert functions here */}
 
-          </HexGrid>
+            </HexGrid>
           </div>
         </Col>
 
         <Col md={1} >
+          
           <p>Currently selected tile: {currentHexagon?._id} </p>
+          
           {AppContextValue.PlayerID == game?.turnForPlayerID ? (<button onClick={endTurnOnClick}>End turn</button>) : (<p>haha</p>)}
+          
           <p>Current resources: {game?.players.find(player => player._id == AppContextValue.PlayerID)?.resources}</p>
+          
           <FigureFactory hexagon={currentHexagon} />
+          
           <img src={pic} alt="" height={100} width={100} onClick={() => console.log(onClickStrategy)}/>
+          
           {serverMessage.map((message, i) =>  (<p key={i} className={`serverMessage ${serverMessageClass.find((msgClass) => msgClass.id == message.id)?.text}`}>{message.text}</p>))}
           
         </Col>

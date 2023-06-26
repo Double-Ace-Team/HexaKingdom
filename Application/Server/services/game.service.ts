@@ -391,9 +391,9 @@ export class GameService extends BaseService
         await result.save();
         
         //CHANGE EVENT TO MESSAGE_SENT EVENT
-        const io =getSocket.getInstance();
-        io.of("main").to(gameID).emit("update_game");
+        getSocket.getInstance().of("main").to(gameID).emit("update_game");
     }
+        
     async getNonStartedGames()
     {
         try{

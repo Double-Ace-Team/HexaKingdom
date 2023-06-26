@@ -136,7 +136,22 @@ export class GameController extends BaseController
             next(error);
         }
     }
+    async sendMessage(req: Request, res: Response, next: NextFunction){
+        try{
+            console.log(req.body);
+
+            const gameID = req.body.gameID;
+            
+            const userID = req.body.userID;
+            
+            const text = req.body.text;
+            await this.unit.games.sendMessage(gameID, userID, text);
+
+        }catch(error){
+            next(error);
+        }
     
+    }
 
     async getNonStartedGames(req: Request, res: Response, next: NextFunction){
 

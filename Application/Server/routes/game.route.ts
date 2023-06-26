@@ -16,5 +16,6 @@ router.put("/start", gameController.start.bind(gameController));
 
 router.post("/:id", gameController.get.bind(gameController));
 
+router.put("/sendMessage", gameController.sendMessage.bind(gameController));
 
 export default router;

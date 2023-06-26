@@ -9,6 +9,7 @@ import Login from './Login';
 import { API_URL } from './config';
 import { io, Socket } from 'socket.io-client';
 import { Container, Nav, NavDropdown, Navbar } from 'react-bootstrap';
+import Register from './Register';
 
 export const SocketContext  = createContext<Socket | undefined>(undefined);
 
@@ -18,43 +19,66 @@ function App() {
   const [socket, setSocket] = useState<Socket>()
 
   useEffect(() => {
+
     setToken(localStorage.getItem('userToken'));
 
-    const newSocket = io(API_URL+"/main");
-    newSocket.on('connect', () => {
-      console.log("conencted")
-    });
 
-    setSocket(newSocket)
-
-    return () => {socket?.disconnect();}
 
   }, [])
+
+  useEffect(() => {
+    if(!socket?.active)
+    {
+      const newSocket = io(API_URL+"/main");
+      newSocket.on('connect', () => {
+        console.log("conencted")
+      });
+
+      setSocket(newSocket)
+    }
+  }, [token])
+
+  const logout = () => {
+
+    localStorage.setItem("userToken", "");
+    
+    localStorage.setItem("username", "");
+
+    socket?.disconnect();
+
+    setToken(null);
+  }
 
   return (
     <div className="App">
       <SocketContext.Provider value={socket}>
 
-    <Navbar bg="light" expand="lg">
-      <Container>
-        <Navbar.Brand href="#home">React-Bootstrap</Navbar.Brand>
-        <Navbar.Toggle aria-controls="basic-navbar-nav" />
-        <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="me-auto">
-            <Nav.Link href="#link">Username</Nav.Link>
-          </Nav>
-        </Navbar.Collapse>
-      </Container>
-    </Navbar>
+        <Navbar bg="light" expand="lg">
+          <Container>
+            <Navbar.Brand href="#home">Hexa Kingdom</Navbar.Brand>
 
-    <BrowserRouter>
-      <Routes>
-        <Route path="/game/:id" element={token ? <GamePage/> : <Login/>}/>
-        <Route path="/" element={token ?  <GameListPage /> : <Login />} />
-      </Routes>
-    </BrowserRouter>
-          
-    </SocketContext.Provider>
+            <Navbar.Toggle aria-controls="basic-navbar-nav" />
+            {
+            token ? 
+            <Navbar.Collapse id="basic-navbar-nav"  className="justify-content-end">
+              <NavDropdown title={localStorage.getItem("username")} id="basic-nav-dropdown">
+                <NavDropdown.Item onClick={() => {logout()}}>Logout</NavDropdown.Item>
+              </NavDropdown>
+            </Navbar.Collapse>
+            : null
+            }
+          </Container>
+        </Navbar>
+
+        <BrowserRouter>
+          <Routes>
+            <Route path="/register" element={<Register/>}/>
+            <Route path="/game/:id" element={token ? <GamePage/> : <Login setToken={setToken}/>}/>
+            <Route path="/" element={token ?  <GameListPage /> : <Login setToken={setToken}/>} />
+          </Routes>
+        </BrowserRouter>
+            
+      </SocketContext.Provider>
     </div>
   );
 }

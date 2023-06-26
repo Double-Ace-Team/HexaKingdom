@@ -13,3 +13,14 @@ export async function login(payload: {username: string, password: string})
 
     return result;
 }
+
+export async function register(payload: {username: string, password: string})
+{
+    const result = await fetchResult(`${BASE_URL}/`, {
+        method: "POST",
+        payload: {user: payload}
+    })
+
+    return result;
+}
+

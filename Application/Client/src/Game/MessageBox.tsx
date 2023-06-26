@@ -1,17 +1,32 @@
 import React, { useEffect, useState } from 'react'
 import { Button, Form } from 'react-bootstrap';
+import { Message } from '../Model/Message';
+import { sendMessage } from '../services/game.service';
 
-function MessageBox() {
+
+interface Props
+{
+  gameID: string | undefined;
+  poruke: Message[] | undefined;
+
+}
+
+function MessageBox(props: Props) {
     
-    const [poruke, setPoruke] = useState([])
-    const [username, setUsername] = useState("")
+    //const [poruke, setPoruke] = useState([])
+    const [username, setUsername] = useState<String>("")
     const [tekst, setTekst] = useState("")
 
     useEffect(() => {
+        
+        let username: string = localStorage.getItem("username")!;
+        setUsername(username);
+
         let div = document.getElementById("messageBox");
+
         if( div != null)
           div.scrollTop = div.scrollHeight - div.clientHeight;
-      }, [])
+      }, [props.poruke])
 
 
 
@@ -45,12 +60,17 @@ function MessageBox() {
     const onSubmit = (event: any) => {
         event.preventDefault()
 
-        if(!username)
+        if(!username || !props.gameID || !tekst)
         {
             alert('Izostavili ste username')
-            return
+            
         }
-
+        else
+        {   
+            setTekst("");
+            
+            sendMessage(props.gameID, tekst);
+        }
         // const request = {
         //     method: 'POST',
         //     headers: {'Authorization': `bearer ${sessionStorage.getItem("jwt")}`}
@@ -68,24 +88,25 @@ function MessageBox() {
     }
     return (
         <div>
-        <div className='messageBox' id='messageBox'>
 
-            <div className='myMessageWith'><div className='myMessage'>test</div></div>
-            <div className='myMessageWith'><div className='myMessage'>test</div></div>
-            <div className='myMessageWith'><div className='myMessage'>test</div></div>
-            <div className='myMessageWith'><div className='myMessage'>test</div></div>
-          {/* {  {poruke.map((poruka) => (poruka.korisnikSnd.username == username) ? 
-                    (<div className='myMessageWith' key={poruka.id}>
-                        <img className="PanelIcon" src={UserIcon}/> YOU
-                        <div className='myMessage'>{poruka.tekst}</div>
-                        {new Date(poruka.vreme).toUTCString()}</div>) : 
-                    (<div className='theirMessageWith' key={poruka.id}>
-                        <img className="PanelIcon" src={UserIcon}/> {poruka.korisnikSnd.username}
-                        <div className='theirMessage'>{poruka.tekst}</div>
-                        {new Date(poruka.vreme).toUTCString()}</div>)) 
-                }} */}
+            <div className='messageBox' id='messageBox'>
 
-        </div>
+                {props.poruke?.map((poruka : Message) => (poruka.username == username) ? 
+                        (<div className='myMessageWith' key={poruka._id}>
+                            <img className="PanelIcon" /*src={UserIcon}*//> YOU
+                            <div className='myMessage'>{poruka.text}</div>
+                            {new Date(poruka.createdAt).toUTCString()}
+                        </div>) 
+                        : 
+                        (<div className='theirMessageWith' key={poruka._id}>
+                            <img className="PanelIcon" /*src={UserIcon}*//> {poruka.username}
+                            <div className='theirMessage'>{poruka.text}</div>
+                            {new Date(poruka.createdAt).toUTCString()}
+                        </div>)) 
+                    }
+
+            </div>
+
             <Form className='sendMessage' onSubmit={onSubmit}>
             <Form.Group className='grMess1'>
                     <Form.Control type='text' placeholder='Type here...' value = {tekst} onChange= { (e) => 

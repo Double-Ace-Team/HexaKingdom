@@ -2,12 +2,13 @@ import { Hexagon } from "./Hexagon";
 import { IModel } from "./IModel";
 import { Player } from "./Player";
 import { User } from "./User";
-
+import { Message } from "./Message";
 export default class Game extends IModel
 {
     players: Array<Player>;
     numbOfPlayers: number;
     hexagons: Array<Hexagon>;
+    messages: Array<Message>;
     turnNumber: number;
     isFinished: boolean;
     isStarted: boolean;
@@ -21,7 +22,7 @@ export default class Game extends IModel
                 hexagons: Array<Hexagon>, turnNumber: number,
                 isFinished: boolean, isStarted: boolean,
                 playerWonID: string, userCreatedID: string,
-                turnForPlayerID: string, createdAt: Date
+                turnForPlayerID: string, createdAt: Date, messages: Array<Message>, 
     )
     {
         super(_id);
@@ -35,5 +36,6 @@ export default class Game extends IModel
         this.userCreatedID = userCreatedID;
         this.turnForPlayerID = turnForPlayerID;
         this.createdAt = createdAt;
+        this.messages = messages;
     }
 }
