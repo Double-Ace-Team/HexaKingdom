@@ -12,11 +12,14 @@ import { BaseController } from "./base.controller";
 
 export class GameController extends BaseController
 {
+
+    static playerColor: string[] = ["red", "blue", "green", "yellow"];
+
     async create(req: Request, res: Response, next: NextFunction){
 
         try {
             const userID = req.body.userID
-            const player = await this.unit.players.create({resources: 0, playerStatus: 0}, userID) as Player
+            const player = await this.unit.players.create({resources: 0, playerStatus: 0, color: GameController.playerColor[0]}, userID) as Player
             const numberOfPlayers = req.body.numberOfPlayers as number;
             if(!player) throw new ApplicationError(httpErrorTypes.RESOURCE_NOT_FOUND);
 
@@ -84,7 +87,7 @@ export class GameController extends BaseController
                 throw new ApplicationError(httpErrorTypes.RESOURCE_NOT_FOUND);
             }
 
-            const player = await this.unit.players.create({resources: 0, playerStatus: 0}, userID) as Player
+            const player = await this.unit.players.create({resources: 0, playerStatus: 0, color: GameController.playerColor[game.players.length]}, userID) as Player
 
             // // const playerID = player._id
             if (!player._id) throw new ApplicationError(httpErrorTypes.RESOURCE_NOT_FOUND);

@@ -22,7 +22,12 @@ function Castle() {
     createNewArmy(appContext?.GameID, appContext?.PlayerID);
   }
   return (
-    <div>Castle {castle?.ownerID == appContext?.PlayerID ? (<button onClick={onClick}>New Army</button>) : null}</div>
+    <div>
+      <div className='mt-1'>Castle</div>
+      <div className='mt-3'>
+       {castle?.ownerID == appContext?.PlayerID ? (<button onClick={onClick}>New Army</button>) : null}
+       </div>
+    </div>
   )
 }
 

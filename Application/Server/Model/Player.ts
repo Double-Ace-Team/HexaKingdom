@@ -9,6 +9,7 @@ export interface Player extends IModel
     game?: Game; //gameID: s tring?
     //capturedHexagons: Array<Hexagon>;
     resources: number;
+    color: string;
     playerStatus: PlayerStatus;
 }
 

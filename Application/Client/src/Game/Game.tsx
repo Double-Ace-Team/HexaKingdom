@@ -164,8 +164,7 @@ return (
             <MessageBox gameID={game?._id} poruke={game?.messages} />
           </Container>
         </Col>
-        <Col md={6} >
-          <div className="" style={{"width": "100%", "height": "100vh", "backgroundColor": "yellow", "margin": "0 auto"}}>
+        <Col md={6} style={{ "height": "100vh", "backgroundColor": "#eee", "margin": "0 auto"}}>
             <HexGrid width={"100%"} viewBox="-20 -10 100 100">
               {/* Main grid with bit hexagons, all manual */}
 
@@ -181,25 +180,24 @@ return (
               {/* insert functions here */}
 
             </HexGrid>
-          </div>
         </Col>
 
-        <Col md={1} >
+        <Col md={3} >
           
-          <p>Currently selected tile: {currentHexagon?._id} </p>
+          {/*<p>Currently selected tile: {currentHexagon?._id} </p>*/}
           
-          {AppContextValue.PlayerID == game?.turnForPlayerID ? (<button onClick={endTurnOnClick}>End turn</button>) : (<p>haha</p>)}
-          
-          <p>Current resources: {game?.players.find(player => player._id == AppContextValue.PlayerID)?.resources}</p>
+          <Row  className="justify-content-md-center mt-3">
+            <p>Current resources: {game?.players.find(player => player._id == AppContextValue.PlayerID)?.resources}</p>
+          </Row>
           
           <FigureFactory hexagon={currentHexagon} />
-          
-          <img src={pic} alt="" height={100} width={100} onClick={() => console.log(onClickStrategy)}/>
-          
+                    
+          <Row  className="justify-content-md-center mt-3">
+            {AppContextValue.PlayerID == game?.turnForPlayerID ? (<button style={{"width": "30%"}}onClick={endTurnOnClick}>End turn</button>) : (<p>Wait for your turn</p>)}
+          </Row>
           {serverMessage.map((message, i) =>  (<p key={i} className={`serverMessage ${serverMessageClass.find((msgClass) => msgClass.id == message.id)?.text}`}>{message.text}</p>))}
-          
+
         </Col>
-        <Col md={2}></Col>
       </Row>
       </AppContext.Provider>
       

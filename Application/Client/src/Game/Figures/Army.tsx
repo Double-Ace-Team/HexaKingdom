@@ -145,7 +145,11 @@ function Army() {
 
 
   return (
-    <div>Army {appContext?.PlayerID == army?.ownerID ? (<p>Moves left: {army?.moves}</p>) : null}</div>
+    <div>Army
+    {appContext?.PlayerID == army?.ownerID ? (<p>Moves left: {army?.moves}</p>) : null}
+    {//<img src={require(`../Res/{}.png`).default} alt="" height={100} width={100} />
+}
+    </div>
   )
 }
 
