@@ -88,8 +88,7 @@ function Game(props: Props) {
 
 
   async function updateGame() {
-
-    if(!props.gameID) return
+    if(!props.gameID) throw new Error("no game ID")
 
     const data = await get(props.gameID)
 
@@ -120,7 +119,7 @@ function Game(props: Props) {
   }
   useEffect(() => {
     //let figures: HexaData[] = [];
-
+    console.log(game);
     setOnClickStrategy(new SelectStrategy())
     // for(let i = 0; i < 25; i++)
     // {

@@ -15,12 +15,13 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 function GamePage() {
   
-    const [isStarted, setIsStarted] = useState<boolean>(false)
-    const [game, setGame] = useState<GameDTO>()
-    const [players, setPlayers] = useState<Player[]>()
+    const [isStarted, setIsStarted] = useState<boolean>(false);
+    const [startButtonDisabled, setStartButtonDisabled] = useState<boolean>(true);
+    const [game, setGame] = useState<GameDTO>();
+    const [players, setPlayers] = useState<Player[]>();
     const { id } = useParams();
     const navigate = useNavigate();
-    const socketContext = useContext(SocketContext)
+    const socketContext = useContext(SocketContext);
 
     function somebodyJoinedGame()
     {
@@ -50,8 +51,11 @@ function GamePage() {
                 if(players == undefined){
                     setPlayers([player])
                     return;
-                } 
-                
+                }
+
+                if(game?.numbOfPlayers == (players.length + 1))
+                setStartButtonDisabled(false);
+
             setPlayers([...players, player]);
             }) 
             socketContext?.on("game_started", (hexagons: Hexagon[]) => {
@@ -103,7 +107,7 @@ function GamePage() {
                         <ListGroup.Item key={index}>{player.user?.username}</ListGroup.Item>
                         ))} 
                     </ListGroup>
-                    <Button variant="primary"onClick={onClick}>Start</Button>
+                    <Button variant="primary"onClick={onClick} disabled={startButtonDisabled}>Start</Button>
                 </Card.Body>
             </Card>
                 
