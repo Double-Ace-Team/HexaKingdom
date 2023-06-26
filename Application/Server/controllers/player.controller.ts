@@ -8,6 +8,7 @@ import { Game } from "../Model/Game";
 import getSocket from "../socket";
 import { Army } from "../Model/hexagons/Army";
 import { nullable, undefined } from "zod";
+import { Castle } from "../Model/hexagons/Castle";
 
 export class PlayerController extends BaseController
 {
@@ -103,18 +104,21 @@ export class PlayerController extends BaseController
             next(error);
         }
     }
-
+    //This method ought NOT to be called from Client(HTTP request), it's service function is called as helper to playerService.
+    //Feel free to remove it from here and routes directory.
     async eliminatePlayer(req: Request, res: Response, next: NextFunction)
     {
         try
         {
             const gameID = req.body.gameID as string;            
 
-            const playerID = req.body.playerID as string;
+            const armyHexa = req.body.armyHexa as Army;
+
+            const castleHexa = req.body.armyCastle as Castle;
             
-            this.checkValidatons(gameID, playerID, 'redundant parameter', 'redundant parameter', 1);
+            this.checkValidatons(gameID, 'redundant parameter', armyHexa._id!.toString(), castleHexa._id!.toString(), 1);
             
-            let payload = await this.unit.players.eliminatePlayer(gameID, playerID);
+            let payload = await this.unit.players.eliminatePlayer(gameID, armyHexa, castleHexa);
 
             return sendResponse(res, payload);
         }

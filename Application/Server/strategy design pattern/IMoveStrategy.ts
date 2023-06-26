@@ -66,8 +66,12 @@ class MineMoveStrategy extends HexagonMoveStrategy {
   class CastleMoveStrategy extends HexagonMoveStrategy {
     async moveLogic(gameID: string, hexagonSrc: Army, hexagonDst: any) {
       if (true) { //hexagonSrc.size > hexagonDst.size * 2
+
+       // await this.hs.swapCoordinates(gameID, hexagonSrc, hexagonDst);
+        
         let ps = new PlayerService();
-        await ps.eliminatePlayer(gameID, hexagonDst._id!.toString());
+        await ps.eliminatePlayer(gameID, hexagonSrc, hexagonDst); //hexagonDst._id!.toString());
+
       } else {
         await this.hs.removeHexagon(gameID, hexagonSrc);
       }

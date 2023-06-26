@@ -1,5 +1,5 @@
 import mongoose, { MongooseDocumentMiddleware, ObjectId, Schema, mongo } from "mongoose";
-import { playersDB, usersDB, plainsDB, gamesDB, armiesDB } from "../db/db-model";
+import { playersDB, usersDB, plainsDB, gamesDB, armiesDB, messageDB } from "../db/db-model";
 import { Game } from "../Model/Game";
 import { Hexagon, hexaStatus } from "../Model/Hexagon";
 import { Player, PlayerStatus } from "../Model/Player";
@@ -19,6 +19,7 @@ import { type } from "os";
 import ApplicationError from "../utils/error/application.error";
 import { compareSync } from "bcrypt";
 import { HexagonMoveStrategy, IMoveStrategy, PlainMoveStrategy} from "../strategy design pattern/IMoveStrategy";
+import { Message } from "../Model/Message";
 export class PlayerService extends BaseService
 {
     hexagonRepository: HexagonRepository;
@@ -116,19 +117,28 @@ export class PlayerService extends BaseService
             return payload;                     
     }
 
-    async eliminatePlayer(gameID: string, hexagonDstID: string)
+    async eliminatePlayer(gameID: string, hexagonSrc:Army, hexagonDst: Castle)
     {
-       // console.log(hexagonDstID);
+       // console.log(hexagonDstID);    
         let game = await gamesDB.findById(gameID);
-        let hexagonDst = game?.hexagons.find(h => h.id == hexagonDstID);
+        //let hexagonDst = game?.hexagons.find(h => h.id == hexagonDstID);
       //  console.log(hexagonDst);
         let playerEnd = await playersDB.findById(hexagonDst?.ownerID);
        // console.log(playerEnd);
-        this.checksValidation(game!.toObject(), playerEnd!.toObject(), game!.hexagons[0].toObject()); //last par is pseudo because funciton requires it.
+       
+        this.checksValidation(game!.toObject(), playerEnd!.toObject(), 'redundant parameter'); //last par is pseudo because funciton requires it.
+
+        let hs = new HexagonService();
+        //await hs.swapCoordinates(gameID, hexagonSrc, hexagonDst);
+        // let ind = game!.hexagons.findIndex(h=> h.id == hexagonSrc._id);
+        // game!.hexagons[ind].q = hexagonDst.q;
+        // game!.hexagons[ind].r = hexagonDst.r;
+        // game!.hexagons[ind].s = hexagonDst.s;
 
         playerEnd!.playerStatus = PlayerStatus.Destroyed;
         playerEnd!.resources = -1;
-        let hs = new HexagonService();
+        
+
 
         await game?.save();
         for(let i=0; i<game!.hexagons.length; i++)
@@ -169,8 +179,21 @@ export class PlayerService extends BaseService
         await playerWonDoc?.save();
         
         if(game?.isFinished == true) 
-        {console.log(`The game has finished. User with name ${userWonDoc?.username} and playerID ${playerWonDoc?.id} has won!
-        Congratulations!`);}
+        {
+            let finmsg = new messageDB();            
+            finmsg.createdAt = new Date();
+            finmsg.username = 'Server';
+            finmsg.text = `The game has finished. User with name ${userWonDoc?.username} and playerID ${playerWonDoc?.id} has won!
+            Congratulations!`
+
+            game.messages.push(finmsg);
+            await game.save();
+
+            const io = getSocket.getInstance();
+            io.of("main").to(gameID).emit("update_game");
+
+           
+        }
         
 
         const io = getSocket.getInstance();
