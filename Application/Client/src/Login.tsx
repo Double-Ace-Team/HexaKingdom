@@ -8,7 +8,7 @@ interface Props{
 }
 function Login(props: Props) {
 
-    const [username, setUsername] = useState("twe");
+    const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     
     const navigate = useNavigate();

@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Button, Form } from 'react-bootstrap';
 import { Message } from '../Model/Message';
 import { sendMessage } from '../services/game.service';
+import { SocketContext } from '../App';
 
 
 interface Props
@@ -13,22 +14,50 @@ interface Props
 
 function MessageBox(props: Props) {
     
-    //const [poruke, setPoruke] = useState([])
+    const [poruke, setPoruke] = useState<Message[]>([])
     const [username, setUsername] = useState<String>("")
     const [tekst, setTekst] = useState("")
+    const socketContext = useContext(SocketContext)
 
     useEffect(() => {
         
         let username: string = localStorage.getItem("username")!;
+       
         setUsername(username);
+        let div = document.getElementById("messageBox");
 
+        if( div != null)
+          div.scrollTop = div.scrollHeight - div.clientHeight;       
+       
+    }, [])
+    
+    useEffect(() => {
+        if(props.poruke)
+            setPoruke([...props.poruke]);
+        let div = document.getElementById("messageBox");
+
+        if( div != null)
+        div.scrollTop = div.scrollHeight - div.clientHeight;
+    }, [props.poruke])
+
+    useEffect(() => {
+        socketContext?.on("message_sent", (msg: Message) => {
+            console.log(poruke);
+            updateMessages(msg, poruke);
+        })
         let div = document.getElementById("messageBox");
 
         if( div != null)
           div.scrollTop = div.scrollHeight - div.clientHeight;
-      }, [props.poruke])
+        return () =>{
+            socketContext?.off("message_sent");
+        }
+    }, [poruke])
 
 
+    const updateMessages = (msg: Message, msgList: Message[]) => {
+        setPoruke([...msgList, msg]);    
+    }
 
     //   useEffect(() => {
 
@@ -87,11 +116,11 @@ function MessageBox(props: Props) {
       
     }
     return (
-        <div>
+        <div >
 
             <div className='messageBox' id='messageBox'>
 
-                {props.poruke?.map((poruka : Message) => (poruka.username == username) ? 
+                {poruke?.map((poruka : Message) => (poruka.username == username) ? 
                         (<div className='myMessageWith' key={poruka._id}>
                             <img className="PanelIcon" /*src={UserIcon}*//> YOU
                             <div className='myMessage'>{poruka.text}</div>

@@ -23,7 +23,7 @@ function GameListPage() {
     async function getGames()
     {
         const data = await getNonStartedGames();
-        
+        console.log(data)
         if(!data.success)
             navigate("/");
         
@@ -31,8 +31,20 @@ function GameListPage() {
     }
     function addGame(game: Game)
     {
-        if(games != undefined)
+        let findGame = games?.find(element => element._id == game._id)
+        if(findGame && games)
+        {
+            let newGames: any[] = games.map((g) =>{
+                            if(g._id == game._id)
+                                g.players = game.players;
+                            return g;
+            });
+            setGames(newGames);
+        }
+        else if(games != undefined)
+        {
             setGames([...games, game]);
+        }
         else
             setGames([game])
     }
@@ -45,6 +57,7 @@ function GameListPage() {
     useEffect(() => {
 
         socketContext?.on("new_game_created", (game:Game) => {
+            console.log(game);
             addGame(game);
         })
 
@@ -125,7 +138,7 @@ function GameListPage() {
                     <td>{index}.</td>
                     <td>{game._id} </td>
                     <td>{game.userCreatedID?.username}</td>
-                    <td>{game.players?.length}</td>
+                    <td>{game.players?.length + '/' + game.numbOfPlayers}</td>
                     <td> <button onClick={() => onJoinClick(game._id)}>Join</button> </td>
                 
                 </tr>))} 

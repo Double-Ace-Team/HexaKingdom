@@ -37,8 +37,7 @@ export class GameController extends BaseController
 
             if(!payload) throw new ApplicationError(httpErrorTypes.RESOURCE_NOT_FOUND);
             
-            const io = getSocket.getInstance();
-            io.of("main").emit("new_game_created", payload);
+
             return sendResponse(res, {_id: payload._id, playerID: player._id});
         } catch (error) {
             next(error);

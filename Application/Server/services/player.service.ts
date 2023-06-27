@@ -158,6 +158,8 @@ export class PlayerService extends BaseService
         game = await gamesDB.findById(gameID);
         game!.numbOfPlayers! -= 1;
         game!.players = game!.players.filter(p => p._id.toString() != playerEnd!._id.toString());
+        
+        getSocket.getInstance().of("main").to(gameID).emit("leave_game", playerEnd!._id.toString());
 
         //endgame
         let playerWonDoc;

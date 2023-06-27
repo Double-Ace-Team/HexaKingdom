@@ -137,9 +137,16 @@ function Game(props: Props) {
     socketContext?.on("update_game", () => {
       updateGame();
     })
-
+    socketContext?.on("leave_game", (playerID: string) => {
+      if(AppContextValue.PlayerID == playerID)
+      {
+        alert("GAME OVER")
+        navigate('/')
+      }
+    })
     return () => {
         socketContext?.off("update_game");
+        socketContext?.off("leave_game");
     }
   }, [])
 

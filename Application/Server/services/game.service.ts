@@ -195,7 +195,11 @@ export class GameService extends BaseService
             
 
             const result = await newGame.save();
-            
+            const user = await usersDB.findById(player.user);
+            getSocket.getInstance().of("main").emit("new_game_created", 
+                {numbOfPlayers: newGame.numbOfPlayers, _id:newGame.id, userCreatedID:{_id:user?.id, username:user?.username}, players: newGame.players}
+            );
+
             return result;
 
         } catch (error) {
@@ -292,6 +296,10 @@ export class GameService extends BaseService
 
             await game.save();
 
+            const user = await usersDB.findById(player.user);
+            getSocket.getInstance().of("main").emit("new_game_created", 
+                {numbOfPlayers: game.numbOfPlayers, _id:game.id, userCreatedID:{_id:user?.id, username:user?.username}, players: game.players}
+            );
             return game;
 
         } catch (error) {
@@ -389,20 +397,20 @@ export class GameService extends BaseService
 
         if(!result || !user)
             return new Error();
-
-        result.messages.push(new messageDB({username: user.username, userID: user.id, text: text, createdAt: Date.now()}));
+        const message = new messageDB({username: user.username, userID: user.id, text: text, createdAt: Date.now()});
+        result.messages.push(message);
 
         await result.save();
         
         //CHANGE EVENT TO MESSAGE_SENT EVENT
-        getSocket.getInstance().of("main").to(gameID).emit("update_game");
+        getSocket.getInstance().of("main").to(gameID).emit("message_sent", message);
     }
         
     async getNonStartedGames()
     {
         try{
             const games = await gamesDB.find()
-                                        .select("numbOfPlayers userCreatedID")
+                                        .select("numbOfPlayers userCreatedID players")
                                         .where("isStarted")
                                         .equals("false")
                                         .populate("userCreatedID", "username");

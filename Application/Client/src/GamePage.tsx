@@ -46,7 +46,6 @@ function GamePage() {
     useEffect(() => {
         if(players!=undefined){
             socketContext?.on("player_joined", (player: Player) => {
-                alert("playerjoined")
 
                 if(players == undefined){
                     setPlayers([player])
@@ -59,7 +58,6 @@ function GamePage() {
             setPlayers([...players, player]);
             }) 
             socketContext?.on("game_started", (hexagons: Hexagon[]) => {
-                console.log(hexagons);
                 window.location.reload();
                 //navigate(`/game/${game?._id}`)
             })
@@ -84,7 +82,6 @@ function GamePage() {
         const result = await start(id);
         if(result.success)
         {            
-            alert("Super");
             navigate("/")
         }
     }

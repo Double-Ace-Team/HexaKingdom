@@ -65,7 +65,7 @@ class MineMoveStrategy extends HexagonMoveStrategy {
   
   class CastleMoveStrategy extends HexagonMoveStrategy {
     async moveLogic(gameID: string, hexagonSrc: Army, hexagonDst: any) {
-      if (true) { //hexagonSrc.size > hexagonDst.size * 2
+      if (Math.random() < 1/4) { //hexagonSrc.size > hexagonDst.size * 2
 
        // await this.hs.swapCoordinates(gameID, hexagonSrc, hexagonDst);
         

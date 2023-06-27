@@ -4,6 +4,7 @@ import { DefaultEventsMap } from "socket.io/dist/typed-events";
 
 class MainSocket implements SocketInterface
 {
+    
     handleConnection(socket: Socket): void {
         socket.on('join_room', (room: any) => {
             socket.join(room);// mora postojati provera moze uz pomoc middleware
