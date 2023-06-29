@@ -6,7 +6,7 @@ Front-end: React.js with Typescript, HTML and CSS.
 
 Back-end: Express.js with Typescript 
 
-Database: MongoDB with Mongoose as ORM(Object-Relational Mapper)
+Database: MongoDB with Mongoose as Mapper
 
 Communication: Socket.io
 
